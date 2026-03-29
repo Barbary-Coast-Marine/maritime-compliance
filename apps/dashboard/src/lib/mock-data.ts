@@ -222,7 +222,7 @@ export const logbookEntries: LogbookEntry[] = [
     date: "2026-03-29T08:15:00",
     type: "fuel",
     title: "Morning Fuel Dip — 78% capacity",
-    author: "C/E Williams",
+    author: "C/E Jon Eaton",
     notes: "Port: 1,560 gal, Starboard: 1,640 gal. Total 3,200 gal (80%).",
   },
   {
@@ -230,7 +230,7 @@ export const logbookEntries: LogbookEntry[] = [
     date: "2026-03-28T14:30:00",
     type: "maintenance",
     title: "Boiler #1 — Safety valve test satisfactory",
-    author: "C/E Williams",
+    author: "C/E Jon Eaton",
     notes: "Both Foster Wheeler boilers tested. Lifting pressure within spec.",
   },
   {
@@ -238,7 +238,7 @@ export const logbookEntries: LogbookEntry[] = [
     date: "2026-03-27T09:00:00",
     type: "drill",
     title: "Fire Drill — Engine room scenario",
-    author: "Capt. Patterson",
+    author: "Capt. Cevan Lesieur",
     notes: "8 crew participated. Simulated engine room fire. Fire pumps #1 and #2 tested. Breathing apparatus demonstrated. Satisfactory.",
   },
   {
@@ -246,7 +246,7 @@ export const logbookEntries: LogbookEntry[] = [
     date: "2026-03-27T15:00:00",
     type: "inspection",
     title: "Lifesaving Equipment — Weekly visual check",
-    author: "1st Mate Davis",
+    author: "Bob Jarvis",
     notes: "All PFDs accounted for. Ring buoys serviceable. Lifeboat engine run 3 min ahead/astern. EPIRB green.",
   },
   {
@@ -254,14 +254,14 @@ export const logbookEntries: LogbookEntry[] = [
     date: "2026-03-26T07:45:00",
     type: "fuel",
     title: "Morning Fuel Dip — 85% capacity",
-    author: "C/E Williams",
+    author: "C/E Jon Eaton",
   },
   {
     id: "log-6",
     date: "2026-03-25T10:00:00",
     type: "general",
     title: "Steering gear test — pre-departure",
-    author: "Capt. Patterson",
+    author: "Capt. Cevan Lesieur",
     notes: "Steering gear, whistle, and engine room communication all satisfactory. Logged per 46 CFR 78.47.",
   },
   {
@@ -269,7 +269,7 @@ export const logbookEntries: LogbookEntry[] = [
     date: "2026-03-22T09:00:00",
     type: "drill",
     title: "Abandon Ship Drill — All hands",
-    author: "Capt. Patterson",
+    author: "Capt. Cevan Lesieur",
     notes: "8 crew present. General alarm sounded. Mustered at survival craft stations. Lifejackets donned and inspected. Lifeboat #2 lowered to embarkation deck. Satisfactory.",
   },
   {
@@ -277,7 +277,7 @@ export const logbookEntries: LogbookEntry[] = [
     date: "2026-03-22T09:45:00",
     type: "drill",
     title: "Man Overboard Drill",
-    author: "Capt. Patterson",
+    author: "Capt. Cevan Lesieur",
     notes: "Oscar deployed. Recovery in 4m 22s. Reviewed procedure with new volunteer crew.",
   },
   {
@@ -285,7 +285,7 @@ export const logbookEntries: LogbookEntry[] = [
     date: "2026-03-20T14:00:00",
     type: "inspection",
     title: "Emergency Lighting — Weekly test",
-    author: "C/E Williams",
+    author: "C/E Jon Eaton",
     notes: "Emergency lighting and power systems tested. All operational. Emergency generator run under load 15 min.",
   },
   {
@@ -293,7 +293,7 @@ export const logbookEntries: LogbookEntry[] = [
     date: "2026-03-15T09:00:00",
     type: "drill",
     title: "Fire Drill — Galley scenario",
-    author: "Capt. Patterson",
+    author: "Capt. Cevan Lesieur",
     notes: "Simulated galley fire. 6 crew participated. Ventilation secured, fire pumps started, portable extinguisher deployed. Satisfactory.",
   },
 ];
