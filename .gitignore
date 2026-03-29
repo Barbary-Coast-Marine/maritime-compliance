@@ -23,3 +23,4 @@ install/ollama-models/
 # Agent prompts (local only)
 .agent-prompt-*.md
 node_modules
+test-audit-report*
