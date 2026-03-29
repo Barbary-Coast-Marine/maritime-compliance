@@ -1,0 +1,33 @@
+rule_id: USCG-H-78-50
+status: draft
+verified_by: null
+verified_date: null
+legal_review: false
+
+citation: "46 CFR 78.50"
+title: "Hatches and Openings Secured"
+subchapter: H
+category: pre_departure
+
+applies_to:
+  vessel_types: [passenger]
+  flag_states: [US]
+  gross_tonnage_min: 100
+  gross_tonnage_max: null
+
+trigger:
+  type: event
+  interval_days: null
+  warning_days: null
+  critical_days: null
+  metric: pre_departure
+  frequency_text: "Before every departure"
+
+required_action: >
+  Before leaving protected waters, ensure all exposed cargo hatches
+  and openings in the hull are closed, properly watertight, and
+  secured for sea. Record draft markings port and starboard in logbook.
+deadline_calc: "Before vessel departs"
+fine_range_usd: [5000, 25000]
+uscg_reference_url: "https://www.ecfr.gov/current/title-46/section-78.50"
+notes: null

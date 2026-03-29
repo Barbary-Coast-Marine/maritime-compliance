@@ -1,0 +1,35 @@
+rule_id: USCG-H-78-67
+status: draft
+verified_by: null
+verified_date: null
+legal_review: false
+
+citation: "46 CFR 78.67"
+title: "Fire Extinguisher Annual Inspection"
+subchapter: H
+category: inspections
+
+applies_to:
+  vessel_types: [passenger]
+  flag_states: [US]
+  gross_tonnage_min: 100
+  gross_tonnage_max: null
+
+trigger:
+  type: calendar
+  interval_days: 365
+  warning_days: 30
+  critical_days: 7
+  metric: days_since_fire_extinguisher_inspection
+  frequency_text: "Annual"
+
+required_action: >
+  Perform tests and inspections of each portable fire extinguisher,
+  semiportable fire extinguisher, and fixed fire-extinguishing system.
+  Keep records showing dates, unit identification numbers, and
+  name of person or company conducting the inspection.
+  Records must be available to marine inspector on request.
+deadline_calc: "last_fire_extinguisher_inspection_date + 365 days"
+fine_range_usd: [5000, 25000]
+uscg_reference_url: "https://www.ecfr.gov/current/title-46/section-78.67"
+notes: null

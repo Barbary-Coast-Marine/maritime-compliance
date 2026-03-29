@@ -1,0 +1,35 @@
+rule_id: USCG-H-78-53
+status: draft
+verified_by: null
+verified_date: null
+legal_review: false
+
+citation: "46 CFR 78.53"
+title: "Stability Verification Before Departure"
+subchapter: H
+category: pre_departure
+
+applies_to:
+  vessel_types: [passenger]
+  flag_states: [US]
+  gross_tonnage_min: 100
+  gross_tonnage_max: null
+
+trigger:
+  type: event
+  interval_days: null
+  warning_days: null
+  critical_days: null
+  metric: pre_departure
+  frequency_text: "Before every departure"
+
+required_action: >
+  After loading but before departure, verify vessel complies with
+  trim-and-stability book, stability letter, Certificate of Inspection,
+  and Loadline Certificate. Ascertain draft, trim, and stability.
+  Enter verification statement in logbook. Vessel may not leave port
+  until in compliance.
+deadline_calc: "Before vessel departs on any voyage"
+fine_range_usd: [10000, 50000]
+uscg_reference_url: "https://www.ecfr.gov/current/title-46/section-78.53"
+notes: null

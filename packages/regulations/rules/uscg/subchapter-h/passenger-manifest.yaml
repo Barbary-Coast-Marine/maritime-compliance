@@ -1,0 +1,34 @@
+rule_id: USCG-H-78-33
+status: draft
+verified_by: null
+verified_date: null
+legal_review: false
+
+citation: "46 CFR 78.33"
+title: "Passenger Manifest and Crew List"
+subchapter: H
+category: pre_departure
+
+applies_to:
+  vessel_types: [passenger]
+  flag_states: [US]
+  gross_tonnage_min: 100
+  gross_tonnage_max: null
+
+trigger:
+  type: event
+  interval_days: null
+  warning_days: null
+  critical_days: null
+  metric: pre_departure
+  frequency_text: "Before every departure"
+
+required_action: >
+  Prepare a complete list of all persons aboard including full name of
+  every passenger, all crew members, and master. Deposit list ashore
+  before departure. USCG requires full name of every passenger —
+  not just lead registrant.
+deadline_calc: "Before vessel departs on any voyage"
+fine_range_usd: [5000, 25000]
+uscg_reference_url: "https://www.ecfr.gov/current/title-46/section-78.33"
+notes: "This is a USCG hard requirement. Failure to maintain accurate passenger manifests is a common citation."

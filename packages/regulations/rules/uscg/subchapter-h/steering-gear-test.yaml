@@ -1,0 +1,33 @@
+rule_id: USCG-H-78-47
+status: draft
+verified_by: null
+verified_date: null
+legal_review: false
+
+citation: "46 CFR 78.47"
+title: "Steering Gear, Whistle, and Communication Test"
+subchapter: H
+category: pre_departure
+
+applies_to:
+  vessel_types: [passenger]
+  flag_states: [US]
+  gross_tonnage_min: 100
+  gross_tonnage_max: null
+
+trigger:
+  type: event
+  interval_days: null
+  warning_days: null
+  critical_days: null
+  metric: pre_departure
+  frequency_text: "12 hours before departure"
+
+required_action: >
+  Test steering gear, whistle, and means of communication between
+  pilothouse and engine room no more than 12 hours before departure.
+  Record date, time, and condition in vessel logbook.
+deadline_calc: "12 hours before each departure"
+fine_range_usd: [2000, 10000]
+uscg_reference_url: "https://www.ecfr.gov/current/title-46/section-78.47"
+notes: null

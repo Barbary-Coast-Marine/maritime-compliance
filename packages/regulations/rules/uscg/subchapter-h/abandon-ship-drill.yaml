@@ -1,0 +1,36 @@
+rule_id: USCG-H-78-37-ABANDON
+status: draft
+verified_by: null
+verified_date: null
+legal_review: false
+
+citation: "46 CFR 78.37"
+title: "Abandon Ship Drill"
+subchapter: H
+category: drills
+
+applies_to:
+  vessel_types: [passenger]
+  flag_states: [US]
+  gross_tonnage_min: 100
+  gross_tonnage_max: null
+
+trigger:
+  type: calendar
+  interval_days: 7
+  warning_days: 2
+  critical_days: 0
+  metric: days_since_abandon_ship_drill
+  frequency_text: "Weekly when carrying passengers"
+
+required_action: >
+  Conduct abandon-ship drill. Must include: sounding general alarm,
+  mustering crew and passengers at survival craft stations, checking
+  lifejackets are correctly donned, lowering at least one lifeboat,
+  starting lifeboat engine, simulating abandon-ship emergency.
+  Each lifeboat launched with crew aboard at least once every 3 months.
+  At least one night drill every 3 months. Log in official logbook.
+deadline_calc: "last_abandon_ship_drill_date + 7 days"
+fine_range_usd: [5000, 25000]
+uscg_reference_url: "https://www.ecfr.gov/current/title-46/section-78.37"
+notes: "Monthly frequency acceptable when not carrying passengers."

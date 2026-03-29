@@ -1,0 +1,34 @@
+rule_id: USCG-H-78-83
+status: draft
+verified_by: null
+verified_date: null
+legal_review: false
+
+citation: "46 CFR 78.83"
+title: "Inflatable Liferaft Annual Servicing"
+subchapter: H
+category: maintenance
+
+applies_to:
+  vessel_types: [passenger]
+  flag_states: [US]
+  gross_tonnage_min: 100
+  gross_tonnage_max: null
+
+trigger:
+  type: calendar
+  interval_days: 365
+  warning_days: 60
+  critical_days: 14
+  metric: days_since_liferaft_servicing
+  frequency_text: "Annual"
+
+required_action: >
+  Service each inflatable liferaft at a Commandant-approved facility
+  for the particular brand. Servicing may be delayed until next
+  scheduled vessel inspection, provided delay does not exceed 5 months.
+  Also service whenever container is damaged or straps/seals are broken.
+deadline_calc: "last_liferaft_servicing_date + 365 days"
+fine_range_usd: [5000, 50000]
+uscg_reference_url: "https://www.ecfr.gov/current/title-46/section-78.83"
+notes: "5-month delay allowance aligns with vessel inspection cycle."
