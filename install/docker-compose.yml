@@ -1,0 +1,69 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: timescale/timescaledb-ha:pg16
+    container_name: maritime-pg
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-maritime}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-maritime}
+      POSTGRES_DB: ${POSTGRES_DB:-maritime}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/home/postgres/pgdata/data
+      - ./init-extensions.sql:/docker-entrypoint-initdb.d/01-extensions.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U maritime"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: maritime-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: maritime-ollama
+    restart: unless-stopped
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-models:/root/.ollama
+
+  vessel-agent:
+    build:
+      context: ..
+      dockerfile: install/Dockerfile
+    container_name: maritime-agent
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-maritime}:${POSTGRES_PASSWORD:-maritime}@postgres:5432/${POSTGRES_DB:-maritime}
+      REDIS_URL: redis://redis:6379
+      OLLAMA_URL: http://ollama:11434
+      PORT: "3000"
+      NODE_ENV: production
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+volumes:
+  pgdata:
+  redis-data:
+  ollama-models:

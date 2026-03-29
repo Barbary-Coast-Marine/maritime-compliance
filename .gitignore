@@ -1,0 +1,22 @@
+node_modules/
+dist/
+.env
+.env.local
+*.log
+.DS_Store
+coverage/
+.turbo/
+*.tsbuildinfo
+
+# Docker volumes
+install/pgdata/
+install/redis-data/
+install/ollama-models/
+
+# IDE
+.vscode/
+.idea/
+
+# Agent prompts (local only)
+.agent-prompt-*.md
+node_modules

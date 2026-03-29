@@ -1,0 +1,20 @@
+{
+  "name": "maritime-compliance",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Offshore-first maritime compliance monitoring platform",
+  "scripts": {
+    "build": "pnpm -r build",
+    "dev": "pnpm -r --parallel dev",
+    "lint": "pnpm -r lint",
+    "db:generate": "pnpm --filter @maritime/db generate",
+    "db:migrate": "pnpm --filter @maritime/db migrate",
+    "db:seed": "pnpm --filter @maritime/db seed",
+    "typecheck": "pnpm -r typecheck"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=9.0.0"
+  },
+  "packageManager": "pnpm@10.33.0"
+}

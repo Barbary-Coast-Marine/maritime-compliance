@@ -1,0 +1,29 @@
+{
+  "name": "@maritime/vessel-agent",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "dev": "tsx watch src/server.ts",
+    "start": "node dist/server.js"
+  },
+  "dependencies": {
+    "@maritime/db": "workspace:*",
+    "@maritime/types": "workspace:*",
+    "fastify": "^5.2.0",
+    "@fastify/cors": "^11.0.0",
+    "pg-boss": "^10.1.0",
+    "postgres": "^3.4.0",
+    "drizzle-orm": "^0.38.0",
+    "ioredis": "^5.4.0",
+    "dotenv": "^16.4.0",
+    "pino": "^9.6.0"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0",
+    "@types/node": "^22.0.0"
+  }
+}
