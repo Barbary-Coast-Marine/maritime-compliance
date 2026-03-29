@@ -13,6 +13,9 @@ install/pgdata/
 install/redis-data/
 install/ollama-models/
 
+# Next.js build output
+.next/
+
 # IDE
 .vscode/
 .idea/
