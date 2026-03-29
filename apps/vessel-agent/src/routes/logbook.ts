@@ -1,21 +1,42 @@
-import { FastifyInstance } from 'fastify';
+import { FastifyInstance } from "fastify";
+import { eq, desc, sql, count } from "drizzle-orm";
+import { logbookEntries, vessels, type Database } from "@maritime/db";
 
 export async function logbookRoutes(app: FastifyInstance) {
+  const db = (app as any).db as Database;
+
   /**
    * GET /api/logbook
    * List logbook entries with optional filters
    */
   app.get<{
     Querystring: { type?: string; limit?: number; offset?: number };
-  }>('/api/logbook', async (request, reply) => {
+  }>("/logbook", async (request, _reply) => {
     const { type, limit = 50, offset = 0 } = request.query;
 
-    // TODO: Query logbook_entries table with filters
+    const conditions = [];
+    if (type) {
+      conditions.push(eq(logbookEntries.entryType, type as any));
+    }
+
+    const baseQuery = type
+      ? db.select().from(logbookEntries).where(eq(logbookEntries.entryType, type as any))
+      : db.select().from(logbookEntries);
+
+    const entries = await baseQuery
+      .orderBy(desc(logbookEntries.timestamp))
+      .limit(Number(limit))
+      .offset(Number(offset));
+
+    const [{ total }] = type
+      ? await db.select({ total: count() }).from(logbookEntries).where(eq(logbookEntries.entryType, type as any))
+      : await db.select({ total: count() }).from(logbookEntries);
+
     return {
-      entries: [],
-      total: 0,
-      limit,
-      offset,
+      entries,
+      total: Number(total),
+      limit: Number(limit),
+      offset: Number(offset),
     };
   });
 
@@ -25,38 +46,36 @@ export async function logbookRoutes(app: FastifyInstance) {
    */
   app.post<{
     Body: {
-      entry_type: 'drill' | 'inspection' | 'fuel_dip' | 'maintenance' | 'general';
+      entry_type: "drill" | "inspection" | "fuel_dip" | "maintenance" | "general";
       title: string;
       body: string;
       author: string;
-      attachments?: { filename: string; mime_type: string; path: string }[];
-      // Type-specific fields
-      drill_type?: string;
-      crew_present?: number;
-      crew_total?: number;
-      equipment_tested?: string[];
-      fuel_port_percent?: number;
-      fuel_starboard_percent?: number;
-      fuel_total_gallons?: number;
-      system_name?: string;
-      next_due_date?: string;
     };
-  }>('/api/logbook', async (request, reply) => {
-    const entry = request.body;
+  }>("/logbook", async (request, reply) => {
+    const { entry_type, title, body, author } = request.body;
 
-    try {
-      // TODO: Insert into logbook_entries table
-      // TODO: Create audit_log entry
-      // TODO: If this completes a compliance rule, update last_completed metric
-
-      return {
-        success: true,
-        entry_id: 'placeholder',
-        created_at: new Date().toISOString(),
-      };
-    } catch (err) {
-      reply.status(500).send({ error: 'Failed to create logbook entry' });
+    // Get vessel ID
+    const [vessel] = await db.select({ id: vessels.id }).from(vessels).limit(1);
+    if (!vessel) {
+      return reply.status(400).send({ error: "No vessel configured" });
     }
+
+    const [entry] = await db
+      .insert(logbookEntries)
+      .values({
+        vesselId: vessel.id,
+        entryType: entry_type,
+        title,
+        body,
+        author,
+      })
+      .returning();
+
+    return {
+      success: true,
+      entry_id: entry.id,
+      created_at: entry.timestamp.toISOString(),
+    };
   });
 
   /**
@@ -65,9 +84,17 @@ export async function logbookRoutes(app: FastifyInstance) {
    */
   app.get<{
     Params: { id: string };
-  }>('/api/logbook/:id', async (request, reply) => {
+  }>("/logbook/:id", async (request, reply) => {
     const { id } = request.params;
-    // TODO: Query by ID
-    return { entry: null };
+
+    const [entry] = await db
+      .select()
+      .from(logbookEntries)
+      .where(eq(logbookEntries.id, id));
+
+    if (!entry) {
+      return reply.status(404).send({ error: "Entry not found" });
+    }
+    return { entry };
   });
 }

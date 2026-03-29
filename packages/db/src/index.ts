@@ -3,9 +3,10 @@ import postgres from "postgres";
 import * as schema from "./schema/index";
 
 export * from "./schema/index";
+export { schema };
 
 export function createDb(connectionString?: string) {
-  const url = connectionString ?? process.env.DATABASE_URL ?? "postgresql://maritime:maritime@localhost:5432/maritime";
+  const url = connectionString ?? process.env.DATABASE_URL ?? "postgresql://darren@localhost:5432/maritime_compliance";
   const client = postgres(url);
   return drizzle(client, { schema });
 }

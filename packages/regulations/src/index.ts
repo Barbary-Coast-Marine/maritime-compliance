@@ -1,3 +1,2 @@
-export { };
-// Rule loader and eCFR fetcher will be added in a subsequent phase.
-// See ARCHITECTURE.md for regulation system design.
+export { loadRules, loadFilteredRules, ComplianceRuleSchema } from "./rule-loader.js";
+export type { ComplianceRule, RuleFilter } from "./rule-loader.js";

@@ -1,5 +1,5 @@
 {
-  "id": "9a2755be-45df-4f87-8ec2-1918cd1cd56a",
+  "id": "f937f61e-6b96-4a6d-8549-bc391db15239",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -601,12 +601,6 @@
         "last_amended": {
           "name": "last_amended",
           "type": "date",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "embedding": {
-          "name": "embedding",
-          "type": "vector(768)",
           "primaryKey": false,
           "notNull": false
         }

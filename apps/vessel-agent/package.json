@@ -12,6 +12,7 @@
   "dependencies": {
     "@fastify/cors": "^11.0.0",
     "@maritime/db": "workspace:*",
+    "@maritime/regulations": "workspace:*",
     "@maritime/types": "workspace:*",
     "dotenv": "^16.4.0",
     "drizzle-orm": "^0.38.0",

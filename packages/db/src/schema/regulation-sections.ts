@@ -1,4 +1,4 @@
-import { pgTable, uuid, varchar, integer, text, date, vector, index } from "drizzle-orm/pg-core";
+import { pgTable, uuid, varchar, integer, text, date, index } from "drizzle-orm/pg-core";
 
 export const regulationSections = pgTable(
   "regulation_sections",
@@ -14,7 +14,8 @@ export const regulationSections = pgTable(
     heading: text("heading").notNull(),
     fullText: text("full_text").notNull(),
     lastAmended: date("last_amended"),
-    embedding: vector("embedding", { dimensions: 768 }), // nomic-embed-text = 768 dims
+    // TODO: Re-enable embedding column when PostgreSQL is upgraded to 15+ with pgvector extension
+    // embedding: vector("embedding", { dimensions: 768 }), // nomic-embed-text = 768 dims
   },
   (table) => [
     index("idx_reg_citation").on(table.citation),

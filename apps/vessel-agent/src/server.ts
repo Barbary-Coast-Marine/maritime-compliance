@@ -1,7 +1,7 @@
+import "dotenv/config";
 import Fastify from "fastify";
 import cors from "@fastify/cors";
 import { createDb } from "@maritime/db";
-import { setupJobQueue } from "./queue.js";
 import { healthRoutes } from "./routes/health.js";
 import { vesselRoutes } from "./routes/vessel.js";
 import { complianceRoutes } from "./routes/compliance.js";
@@ -25,10 +25,6 @@ async function main() {
   const db = createDb(process.env.DATABASE_URL);
   app.decorate("db", db);
 
-  // Job queue (pg-boss)
-  const boss = await setupJobQueue(process.env.DATABASE_URL);
-  app.decorate("boss", boss);
-
   // Routes
   await app.register(healthRoutes, { prefix: "/api" });
   await app.register(vesselRoutes, { prefix: "/api" });
@@ -39,7 +35,6 @@ async function main() {
   // Graceful shutdown
   const shutdown = async () => {
     app.log.info("Shutting down...");
-    await boss.stop();
     await app.close();
     process.exit(0);
   };

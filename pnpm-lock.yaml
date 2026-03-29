@@ -53,6 +53,9 @@ importers:
       '@maritime/db':
         specifier: workspace:*
         version: link:../../packages/db
+      '@maritime/regulations':
+        specifier: workspace:*
+        version: link:../../packages/regulations
       '@maritime/types':
         specifier: workspace:*
         version: link:../../packages/types

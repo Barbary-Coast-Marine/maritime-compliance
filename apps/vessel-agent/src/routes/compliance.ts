@@ -1,29 +1,126 @@
-import { FastifyInstance } from 'fastify';
-import { evaluateCompliance, getOverallStatus, getComplianceSummary } from '../rule-engine.js';
-import type { VesselComplianceState, ComplianceRule } from '../rule-engine.js';
+import { FastifyInstance } from "fastify";
+import { desc, eq } from "drizzle-orm";
+import { vessels, logbookEntries, type Database } from "@maritime/db";
+import { loadRules } from "@maritime/regulations";
+import {
+  evaluateCompliance,
+  getOverallStatus,
+  getComplianceSummary,
+} from "../rule-engine.js";
+import type { VesselComplianceState } from "../rule-engine.js";
+import * as path from "path";
+import { fileURLToPath } from "url";
 
-// TODO: Replace with real DB queries and rule loader
-// This is the wiring — the rule engine does the real work
+// Resolve the rules directory relative to the monorepo root
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const RULES_DIR = path.resolve(__dirname, "../../../../packages/regulations/rules");
+
+/**
+ * Build vessel compliance state from DB data
+ */
+async function buildVesselState(db: Database): Promise<{ vessel: any; state: VesselComplianceState } | null> {
+  const [vessel] = await db.select().from(vessels).limit(1);
+  if (!vessel) return null;
+
+  // Get the most recent logbook entry per type to determine last_completed dates
+  // We map entry types to rule metrics
+  const metricMap: Record<string, string[]> = {
+    drill: ["days_since_fire_drill", "days_since_abandon_ship_drill"],
+    inspection: [
+      "days_since_lifesaving_weekly_inspection",
+      "days_since_lifesaving_monthly_inspection",
+      "days_since_fire_extinguisher_annual_inspection",
+      "days_since_liferaft_annual_servicing",
+      "days_since_boiler_inspection",
+    ],
+    maintenance: ["days_since_steering_gear_test", "days_since_emergency_lighting_test"],
+  };
+
+  const last_completed: Record<string, Date> = {};
+
+  // Query recent entries and map to metrics based on title keywords
+  const recentEntries = await db
+    .select()
+    .from(logbookEntries)
+    .orderBy(desc(logbookEntries.timestamp))
+    .limit(100);
+
+  for (const entry of recentEntries) {
+    const titleLower = entry.title.toLowerCase();
+
+    // Map logbook entry titles to compliance metrics
+    const mappings: [string, string[]][] = [
+      ["days_since_fire_drill", ["fire drill"]],
+      ["days_since_abandon_ship_drill", ["abandon ship"]],
+      ["days_since_lifesaving_weekly_inspection", ["lifesaving", "weekly"]],
+      ["days_since_lifesaving_monthly_inspection", ["lifesaving", "monthly"]],
+      ["days_since_fire_extinguisher_annual_inspection", ["fire extinguisher"]],
+      ["days_since_liferaft_annual_servicing", ["liferaft"]],
+      ["days_since_steering_gear_test", ["steering gear"]],
+      ["days_since_emergency_lighting_test", ["emergency lighting"]],
+      ["days_since_boiler_inspection", ["boiler"]],
+    ];
+
+    for (const [metric, keywords] of mappings) {
+      if (keywords.every((kw) => titleLower.includes(kw))) {
+        // Only keep the most recent (first seen, since ordered desc)
+        if (!last_completed[metric]) {
+          last_completed[metric] = entry.timestamp;
+        }
+      }
+    }
+  }
+
+  return {
+    vessel,
+    state: {
+      last_completed,
+      vessel_type: vessel.vesselType,
+      flag_state: vessel.flagState,
+      gross_tonnage: Number(vessel.grossTonnage) || 0,
+      coi_expiry: vessel.coiExpiry ? new Date(vessel.coiExpiry) : undefined,
+    },
+  };
+}
 
 export async function complianceRoutes(app: FastifyInstance) {
+  const db = (app as any).db as Database;
+
   /**
    * GET /api/compliance/status
    * Returns overall compliance status + per-rule evaluations
    */
-  app.get('/api/compliance/status', async (request, reply) => {
+  app.get("/compliance/status", async (_request, reply) => {
     try {
-      // TODO: Load rules from YAML via rule-loader
-      // TODO: Load vessel state from database
-      // For now return a placeholder
+      // Load rules from YAML
+      const { rules, errors } = loadRules(RULES_DIR);
+      if (errors.length > 0) {
+        app.log.warn({ errors }, "Rule loading errors");
+      }
+
+      // Build vessel state from DB
+      const result = await buildVesselState(db);
+      if (!result) {
+        return reply.status(404).send({ error: "No vessel configured" });
+      }
+
+      const { vessel, state } = result;
+
+      // Run the rule engine
+      const evaluations = evaluateCompliance(rules, state);
+      const overallStatus = getOverallStatus(evaluations);
+      const summary = getComplianceSummary(evaluations);
+
       return {
-        vessel_id: 'placeholder',
-        status: 'pass',
-        summary: { total: 0, passing: 0, warnings: 0, violations: 0, info: 0 },
-        evaluations: [],
+        vessel_id: vessel.id,
+        status: overallStatus,
+        summary,
+        evaluations,
         evaluated_at: new Date().toISOString(),
       };
     } catch (err) {
-      reply.status(500).send({ error: 'Failed to evaluate compliance' });
+      app.log.error(err, "Failed to evaluate compliance");
+      return reply.status(500).send({ error: "Failed to evaluate compliance" });
     }
   });
 
@@ -31,41 +128,67 @@ export async function complianceRoutes(app: FastifyInstance) {
    * GET /api/compliance/rules
    * Returns all loaded rules for this vessel
    */
-  app.get('/api/compliance/rules', async (request, reply) => {
+  app.get("/compliance/rules", async (_request, reply) => {
     try {
+      const { rules, errors } = loadRules(RULES_DIR);
       return {
-        rules: [],
-        count: 0,
+        rules,
+        errors: errors.length > 0 ? errors : undefined,
+        count: rules.length,
       };
     } catch (err) {
-      reply.status(500).send({ error: 'Failed to load rules' });
+      return reply.status(500).send({ error: "Failed to load rules" });
     }
   });
 
   /**
    * POST /api/compliance/log-completion
    * Log that a compliance item was completed (drill, inspection, etc.)
-   * This updates the vessel state and re-evaluates
    */
   app.post<{
-    Body: { rule_id: string; completed_by: string; notes?: string; attachments?: string[] };
-  }>('/api/compliance/log-completion', async (request, reply) => {
+    Body: { rule_id: string; completed_by: string; notes?: string };
+  }>("/compliance/log-completion", async (request, reply) => {
     const { rule_id, completed_by, notes } = request.body;
 
     try {
-      // TODO: Insert logbook entry
-      // TODO: Update last_completed for the rule's metric
-      // TODO: Create audit log entry
-      // TODO: Re-evaluate compliance and clear any alerts
+      // Get vessel
+      const [vessel] = await db.select({ id: vessels.id }).from(vessels).limit(1);
+      if (!vessel) {
+        return reply.status(400).send({ error: "No vessel configured" });
+      }
+
+      // Find the rule to determine entry type
+      const { rules } = loadRules(RULES_DIR);
+      const rule = rules.find((r) => r.rule_id === rule_id);
+
+      const entryType = rule?.category === "drills"
+        ? "drill"
+        : rule?.category === "maintenance"
+          ? "maintenance"
+          : "inspection";
+
+      // Insert logbook entry
+      const [entry] = await db
+        .insert(logbookEntries)
+        .values({
+          vesselId: vessel.id,
+          entryType: entryType as any,
+          title: rule?.title ?? rule_id,
+          body: notes ?? `Compliance item ${rule_id} completed by ${completed_by}`,
+          author: completed_by,
+        })
+        .returning();
 
       return {
         success: true,
         rule_id,
         completed_by,
-        completed_at: new Date().toISOString(),
+        entry_id: entry.id,
+        completed_at: entry.timestamp.toISOString(),
       };
     } catch (err) {
-      reply.status(500).send({ error: 'Failed to log completion' });
+      app.log.error(err, "Failed to log completion");
+      return reply.status(500).send({ error: "Failed to log completion" });
     }
   });
 
@@ -75,17 +198,27 @@ export async function complianceRoutes(app: FastifyInstance) {
    */
   app.get<{
     Querystring: { limit?: number };
-  }>('/api/compliance/upcoming', async (request, reply) => {
+  }>("/compliance/upcoming", async (request, reply) => {
     const limit = request.query.limit ?? 10;
 
     try {
-      // TODO: Evaluate all rules, filter to calendar type, sort by days_remaining
-      return {
-        upcoming: [],
-        count: 0,
-      };
+      const { rules } = loadRules(RULES_DIR);
+      const result = await buildVesselState(db);
+      if (!result) {
+        return reply.status(404).send({ error: "No vessel configured" });
+      }
+
+      const evaluations = evaluateCompliance(rules, result.state);
+
+      // Filter to items with a due date, sort by days_remaining
+      const upcoming = evaluations
+        .filter((e) => e.next_due != null)
+        .sort((a, b) => (a.days_remaining ?? Infinity) - (b.days_remaining ?? Infinity))
+        .slice(0, Number(limit));
+
+      return { upcoming, count: upcoming.length };
     } catch (err) {
-      reply.status(500).send({ error: 'Failed to get upcoming items' });
+      return reply.status(500).send({ error: "Failed to get upcoming items" });
     }
   });
 }

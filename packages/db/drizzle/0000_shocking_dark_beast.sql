@@ -93,8 +93,7 @@ CREATE TABLE "regulation_sections" (
 	"citation" varchar(100) NOT NULL,
 	"heading" text NOT NULL,
 	"full_text" text NOT NULL,
-	"last_amended" date,
-	"embedding" vector(768)
+	"last_amended" date
 );
 --> statement-breakpoint
 CREATE TABLE "telemetry" (
