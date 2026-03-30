@@ -8,3 +8,5 @@ export { complianceRules, triggerTypeEnum } from "./compliance-rules";
 export { logbookEntries, entryTypeEnum } from "./logbook-entries";
 export { documentVault } from "./document-vault";
 export { users, userRoleEnum } from "./users";
+export { crewProfiles } from "./crew-profiles";
+export { crewCredentials } from "./crew-credentials";

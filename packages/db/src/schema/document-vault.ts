@@ -1,4 +1,4 @@
-import { pgTable, uuid, varchar, timestamp, date } from "drizzle-orm/pg-core";
+import { pgTable, uuid, varchar, timestamp, date, boolean, text } from "drizzle-orm/pg-core";
 import { vessels } from "./vessels";
 
 export const documentVault = pgTable("document_vault", {
@@ -11,4 +11,9 @@ export const documentVault = pgTable("document_vault", {
   uploadedBy: uuid("uploaded_by"),
   uploadedAt: timestamp("uploaded_at", { withTimezone: true }).defaultNow().notNull(),
   expiryDate: date("expiry_date"),
+  crewProfileId: uuid("crew_profile_id"),
+  category: varchar("category", { length: 50 }).default("other"),
+  notes: text("notes"),
+  isDeleted: boolean("is_deleted").default(false),
+  deletedAt: timestamp("deleted_at", { withTimezone: true }),
 });

@@ -42,34 +42,45 @@ function AppContent({ children }: { children: React.ReactNode }) {
 
       <nav className="fixed bottom-0 left-0 right-0 bg-navy-surface border-t border-navy-border">
         <div className="max-w-3xl mx-auto flex justify-around">
-          {tabs.map((tab) => (
-            <Link
-              key={tab.href}
-              href={tab.href}
-              className={`flex flex-col items-center py-3 px-2 min-w-[64px] min-h-[48px] transition-colors ${
-                pathname === tab.href
-                  ? "text-status-blue"
-                  : "text-slate-muted hover:text-slate-text"
-              }`}
-            >
-              <tab.icon />
-              <span className="text-xs mt-1">{tab.label}</span>
-            </Link>
-          ))}
+          {getTabsForRole(user?.role).map((tab) => {
+            const isActive = tab.href === "/"
+              ? pathname === "/"
+              : pathname.startsWith(tab.href);
+            return (
+              <Link
+                key={tab.href}
+                href={tab.href}
+                className={`flex flex-col items-center py-3 px-2 min-w-[64px] min-h-[48px] transition-colors ${
+                  isActive
+                    ? "text-status-blue"
+                    : "text-slate-muted hover:text-slate-text"
+                }`}
+              >
+                <tab.icon />
+                <span className="text-xs mt-1">{tab.label}</span>
+              </Link>
+            );
+          })}
         </div>
       </nav>
     </>
   );
 }
 
-const tabs = [
-  { href: "/", label: "Bridge", icon: BridgeIcon },
-  { href: "/checks", label: "Checks", icon: ChecksIcon },
-  { href: "/logbook", label: "Logbook", icon: LogbookIcon },
-  { href: "/alerts", label: "Alerts", icon: AlertsIcon },
-  { href: "/pre-departure", label: "Pre-Dep", icon: PreDepIcon },
-  { href: "/reports", label: "Reports", icon: ReportsIcon },
-];
+function getTabsForRole(role?: string) {
+  const base = [
+    { href: "/", label: "Bridge", icon: BridgeIcon },
+    { href: "/checks", label: "Checks", icon: ChecksIcon },
+    { href: "/logbook", label: "Logbook", icon: LogbookIcon },
+    { href: "/alerts", label: "Alerts", icon: AlertsIcon },
+    { href: "/pre-departure", label: "Pre-Dep", icon: PreDepIcon },
+    { href: "/reports", label: "Reports", icon: ReportsIcon },
+  ];
+  if (role === "captain" || role === "fleet_manager") {
+    base.push({ href: "/admin", label: "Admin", icon: AdminIcon });
+  }
+  return base;
+}
 
 function BridgeIcon() {
   return (
@@ -123,6 +134,15 @@ function ReportsIcon() {
       <polyline points="14 2 14 8 20 8" />
       <line x1="16" y1="13" x2="8" y2="13" />
       <line x1="16" y1="17" x2="8" y2="17" />
+    </svg>
+  );
+}
+
+function AdminIcon() {
+  return (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="3" />
+      <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z" />
     </svg>
   );
 }

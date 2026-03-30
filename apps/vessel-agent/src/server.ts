@@ -10,6 +10,7 @@ import { logbookRoutes } from "./routes/logbook.js";
 import { alertRoutes } from "./routes/alerts.js";
 import { authRoutes } from "./routes/auth.js";
 import { reportRoutes } from "./routes/reports.js";
+import { adminRoutes } from "./routes/admin.js";
 
 const port = Number(process.env.PORT ?? 3000);
 const host = process.env.HOST ?? "0.0.0.0";
@@ -39,6 +40,7 @@ async function main() {
   await app.register(logbookRoutes, { prefix: "/api" });
   await app.register(alertRoutes, { prefix: "/api" });
   await app.register(reportRoutes, { prefix: "/api" });
+  await app.register(adminRoutes, { prefix: "/api" });
 
   // Graceful shutdown
   const shutdown = async () => {

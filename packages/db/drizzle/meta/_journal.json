@@ -8,6 +8,13 @@
       "when": 1774821814077,
       "tag": "0000_shocking_dark_beast",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1774892588350,
+      "tag": "0001_faithful_madame_masque",
+      "breakpoints": true
     }
   ]
 }
