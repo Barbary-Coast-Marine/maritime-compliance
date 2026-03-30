@@ -32,6 +32,22 @@ const typeColors: Record<string, string> = {
   general: "bg-navy-border",
 };
 
+const typeBorderColors: Record<string, string> = {
+  drill: "border-l-status-blue",
+  inspection: "border-l-status-green",
+  fuel_dip: "border-l-status-amber",
+  maintenance: "border-l-slate-muted",
+  general: "border-l-navy-border",
+};
+
+const filterEmptyLabels: Record<FilterTab, string> = {
+  All: "logbook",
+  Drills: "drill",
+  Inspections: "inspection",
+  Fuel: "fuel",
+  Maintenance: "maintenance",
+};
+
 const typeIcons: Record<string, string> = {
   drill: "D", inspection: "I", fuel: "F", maintenance: "M", general: "G",
 };
@@ -86,7 +102,7 @@ export default function LogbookPage() {
           <button
             key={tab}
             onClick={() => setFilter(tab)}
-            className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap min-h-[40px] transition-colors ${
+            className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap min-h-[40px] transition-colors ${
               filter === tab
                 ? "bg-status-blue text-white"
                 : "bg-navy-surface text-slate-muted hover:text-slate-text"
@@ -111,7 +127,7 @@ export default function LogbookPage() {
             return (
               <div
                 key={entry.id}
-                className="bg-navy-surface rounded-lg p-4 min-h-[48px]"
+                className={`bg-navy-surface rounded-lg p-4 min-h-[48px] border-l-4 ${typeBorderColors[entry.type] || "border-l-navy-border"}`}
               >
                 <div className="flex items-center gap-3">
                   <span
@@ -136,7 +152,7 @@ export default function LogbookPage() {
           })}
           {entries.length === 0 && (
             <p className="text-sm text-slate-muted text-center py-8">
-              No entries found.
+              No {filterEmptyLabels[filter]} entries yet.
             </p>
           )}
         </div>

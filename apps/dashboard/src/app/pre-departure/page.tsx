@@ -114,14 +114,16 @@ export default function PreDeparturePage() {
       {/* Progress bar */}
       <div>
         <div className="flex justify-between text-sm mb-1">
-          <span className="text-slate-muted">Progress</span>
+          <span className="text-slate-muted">{completedCount} of {totalCount} completed</span>
           <span className="font-semibold">
-            {completedCount}/{totalCount} completed
+            {Math.round((completedCount / totalCount) * 100)}%
           </span>
         </div>
-        <div className="w-full h-3 bg-navy-surface rounded-full overflow-hidden">
+        <div className="w-full h-2 bg-navy-surface rounded-full overflow-hidden">
           <div
-            className="h-full bg-status-green rounded-full transition-all duration-300"
+            className={`h-full rounded-full transition-all duration-300 ${
+              allComplete ? "bg-status-green" : completedCount > 0 ? "bg-status-amber" : "bg-slate-muted/30"
+            }`}
             style={{ width: `${(completedCount / totalCount) * 100}%` }}
           />
         </div>
@@ -189,6 +191,16 @@ export default function PreDeparturePage() {
       {error && (
         <div className="bg-status-red/15 border border-status-red/30 text-status-red text-sm p-3 rounded-lg">
           {error}
+        </div>
+      )}
+
+      {/* Complete banner */}
+      {allComplete && (
+        <div className="flex items-center gap-2 text-status-green text-sm font-semibold">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="20 6 9 17 4 12" />
+          </svg>
+          Complete Checklist
         </div>
       )}
 

@@ -37,28 +37,15 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-navy flex items-center justify-center px-4 -mt-4 -mx-4">
       <div className="w-full max-w-sm">
-        <div className="bg-navy-surface border border-navy-border rounded-2xl p-8 space-y-6">
-          {/* Icon */}
+        <div className="bg-navy-surface border border-navy-border border-t-2 border-t-status-blue rounded-2xl p-8 space-y-6">
+          {/* Logo */}
           <div className="flex justify-center">
-            <div className="w-16 h-16 rounded-full bg-status-blue/15 flex items-center justify-center">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="9" />
-                <circle cx="12" cy="12" r="1.5" />
-                <line x1="12" y1="3" x2="12" y2="7" />
-                <line x1="12" y1="17" x2="12" y2="21" />
-                <line x1="3" y1="12" x2="7" y2="12" />
-                <line x1="17" y1="12" x2="21" y2="12" />
-                <line x1="5.6" y1="5.6" x2="8.5" y2="8.5" />
-                <line x1="15.5" y1="15.5" x2="18.4" y2="18.4" />
-                <line x1="5.6" y1="18.4" x2="8.5" y2="15.5" />
-                <line x1="15.5" y1="8.5" x2="18.4" y2="5.6" />
-              </svg>
-            </div>
+            <img src="/bcm-logo.png" alt="Barbary Coast Marine" className="h-16 w-auto" />
           </div>
 
           {/* Title */}
           <div className="text-center">
-            <h1 className="text-xl font-bold text-slate-text">Maritime Compliance Platform</h1>
+            <h1 className="text-xl font-bold text-slate-text">Vessel Compliance System</h1>
             <p className="text-sm text-slate-muted mt-1">SS Jeremiah O&apos;Brien</p>
           </div>
 

@@ -12,6 +12,19 @@ const categoryLabels: Record<CheckCategory, string> = {
   pre_departure: "Pre-Departure",
 };
 
+const categoryAccent: Record<CheckCategory, string> = {
+  drills: "border-l-status-blue",
+  inspections: "border-l-status-green",
+  certificates: "border-l-status-amber",
+  pre_departure: "border-l-slate-muted",
+};
+
+const statusBorderColor: Record<string, string> = {
+  overdue: "border-l-status-red",
+  warning: "border-l-status-amber",
+  passing: "border-l-status-green/40",
+};
+
 const categoryOrder: CheckCategory[] = ["drills", "inspections", "certificates", "pre_departure"];
 
 function formatDate(d: string | null) {
@@ -93,14 +106,14 @@ export default function ChecksPage() {
         if (items.length === 0) return null;
         return (
           <section key={cat}>
-            <h2 className="text-sm font-semibold text-slate-muted uppercase tracking-wider mb-2">
-              {categoryLabels[cat]}
+            <h2 className={`text-sm font-semibold text-slate-muted uppercase tracking-wider mb-2 border-l-2 ${categoryAccent[cat]} pl-2`}>
+              {categoryLabels[cat]} ({items.length})
             </h2>
             <div className="space-y-2">
               {items.map((item) => (
                 <div
                   key={item.id}
-                  className="bg-navy-surface rounded-lg p-4 min-h-[48px]"
+                  className={`bg-navy-surface rounded-lg p-4 min-h-[48px] border-l-4 ${statusBorderColor[item.status] || "border-l-status-green/40"}`}
                 >
                   <div className="flex items-center gap-3">
                     <StatusDot status={item.status} />
