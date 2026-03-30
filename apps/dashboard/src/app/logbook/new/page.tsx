@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { createLogbookEntry } from "@/lib/api";
+import { useAuth } from "@/lib/auth-context";
 
 type EntryType = "drill" | "inspection" | "fuel_dip" | "maintenance" | "general";
 
@@ -16,8 +17,16 @@ const entryTypes: { type: EntryType; label: string; icon: string; color: string 
 
 export default function NewLogbookEntryPage() {
   const router = useRouter();
+  const { user } = useAuth();
   const [selectedType, setSelectedType] = useState<EntryType | null>(null);
   const [author, setAuthor] = useState("");
+
+  // Pre-fill author from logged-in user
+  useEffect(() => {
+    if (user && !author) {
+      setAuthor(user.displayName || user.username);
+    }
+  }, [user]); // eslint-disable-line react-hooks/exhaustive-deps
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 

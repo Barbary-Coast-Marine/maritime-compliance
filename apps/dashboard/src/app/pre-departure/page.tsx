@@ -4,11 +4,13 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { getPreDepartureItems, createLogbookEntry } from "@/lib/api";
 import { vessel } from "@/lib/mock-data";
+import { useAuth } from "@/lib/auth-context";
 
 const items = getPreDepartureItems();
 
 export default function PreDeparturePage() {
   const router = useRouter();
+  const { user } = useAuth();
   const [checked, setChecked] = useState<Record<string, boolean>>({});
   const [passengerCount, setPassengerCount] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -54,7 +56,7 @@ export default function PreDeparturePage() {
       entry_type: "inspection",
       title: "Pre-Departure Checklist",
       body,
-      author: "Bridge",
+      author: user?.displayName || user?.username || "Bridge",
     });
 
     if (result.success) {

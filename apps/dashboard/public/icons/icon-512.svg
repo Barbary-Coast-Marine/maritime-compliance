@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <rect width="512" height="512" fill="#0B1426" rx="64"/>
+  <g transform="translate(256,256)">
+    <!-- Ship wheel outer ring -->
+    <circle cx="0" cy="0" r="150" fill="none" stroke="#3B82F6" stroke-width="14"/>
+    <!-- Hub -->
+    <circle cx="0" cy="0" r="32" fill="none" stroke="#3B82F6" stroke-width="12"/>
+    <!-- Spokes -->
+    <line x1="0" y1="-150" x2="0" y2="-32" stroke="#3B82F6" stroke-width="12" stroke-linecap="round"/>
+    <line x1="0" y1="150" x2="0" y2="32" stroke="#3B82F6" stroke-width="12" stroke-linecap="round"/>
+    <line x1="-150" y1="0" x2="-32" y2="0" stroke="#3B82F6" stroke-width="12" stroke-linecap="round"/>
+    <line x1="150" y1="0" x2="32" y2="0" stroke="#3B82F6" stroke-width="12" stroke-linecap="round"/>
+    <line x1="-106" y1="-106" x2="-22.6" y2="-22.6" stroke="#3B82F6" stroke-width="12" stroke-linecap="round"/>
+    <line x1="106" y1="106" x2="22.6" y2="22.6" stroke="#3B82F6" stroke-width="12" stroke-linecap="round"/>
+    <line x1="-106" y1="106" x2="-22.6" y2="22.6" stroke="#3B82F6" stroke-width="12" stroke-linecap="round"/>
+    <line x1="106" y1="-106" x2="22.6" y2="-22.6" stroke="#3B82F6" stroke-width="12" stroke-linecap="round"/>
+    <!-- Handle knobs on outer ring -->
+    <circle cx="0" cy="-150" r="16" fill="#3B82F6"/>
+    <circle cx="0" cy="150" r="16" fill="#3B82F6"/>
+    <circle cx="-150" cy="0" r="16" fill="#3B82F6"/>
+    <circle cx="150" cy="0" r="16" fill="#3B82F6"/>
+    <circle cx="-106" cy="-106" r="16" fill="#3B82F6"/>
+    <circle cx="106" cy="106" r="16" fill="#3B82F6"/>
+    <circle cx="-106" cy="106" r="16" fill="#3B82F6"/>
+    <circle cx="106" cy="-106" r="16" fill="#3B82F6"/>
+  </g>
+</svg>
