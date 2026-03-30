@@ -11,6 +11,7 @@ export const users = pgTable("users", {
   vesselId: uuid("vessel_id").references(() => vessels.id),
   displayName: varchar("display_name", { length: 200 }),
   email: varchar("email", { length: 255 }),
+  phone: varchar("phone", { length: 30 }),
   isActive: boolean("is_active").default(true).notNull(),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
 });

@@ -24,7 +24,7 @@ export async function authRoutes(app: FastifyInstance) {
     const [user] = await db
       .select()
       .from(users)
-      .where(eq(users.username, username))
+      .where(eq(users.username, username.toLowerCase().trim()))
       .limit(1);
 
     if (!user) {
@@ -50,8 +50,11 @@ export async function authRoutes(app: FastifyInstance) {
       user: {
         id: user.id,
         username: user.username,
+        displayName: user.displayName,
         role: user.role,
         vesselId: user.vesselId,
+        email: user.email,
+        phone: user.phone,
       },
     };
   });
@@ -82,11 +85,13 @@ export async function authRoutes(app: FastifyInstance) {
       return reply.status(400).send({ error: "Username, password, and role are required" });
     }
 
+    const normalizedUsername = username.toLowerCase().trim();
+
     // Check if username already exists
     const [existing] = await db
       .select()
       .from(users)
-      .where(eq(users.username, username))
+      .where(eq(users.username, normalizedUsername))
       .limit(1);
 
     if (existing) {
@@ -98,7 +103,7 @@ export async function authRoutes(app: FastifyInstance) {
     const [user] = await db
       .insert(users)
       .values({
-        username,
+        username: normalizedUsername,
         passwordHash,
         role,
         vesselId: vesselId ?? null,

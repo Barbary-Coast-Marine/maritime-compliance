@@ -15,6 +15,13 @@
       "when": 1774892588350,
       "tag": "0001_faithful_madame_masque",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1774910591339,
+      "tag": "0002_moaning_thing",
+      "breakpoints": true
     }
   ]
 }
