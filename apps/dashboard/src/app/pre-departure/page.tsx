@@ -1,25 +1,29 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { getPreDepartureItems, createLogbookEntry } from "@/lib/api";
 import { vessel } from "@/lib/mock-data";
 import { useAuth } from "@/lib/auth-context";
-
-const items = getPreDepartureItems();
+import type { PreDepartureItem } from "@/lib/mock-data";
 
 export default function PreDeparturePage() {
   const router = useRouter();
   const { user } = useAuth();
+  const [items, setItems] = useState<PreDepartureItem[]>([]);
   const [checked, setChecked] = useState<Record<string, boolean>>({});
   const [passengerCount, setPassengerCount] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  useEffect(() => {
+    getPreDepartureItems().then(setItems);
+  }, []);
+
   const completedCount = Object.values(checked).filter(Boolean).length;
   const totalCount = items.length;
-  const allComplete = completedCount === totalCount;
+  const allComplete = totalCount > 0 && completedCount === totalCount;
 
   const today = new Date().toLocaleDateString("en-US", {
     weekday: "long",
@@ -86,6 +90,14 @@ export default function PreDeparturePage() {
         >
           View Logbook
         </button>
+      </div>
+    );
+  }
+
+  if (items.length === 0) {
+    return (
+      <div className="flex items-center justify-center py-16">
+        <span className="w-6 h-6 border-2 border-slate-muted/30 border-t-slate-muted rounded-full animate-spin" />
       </div>
     );
   }

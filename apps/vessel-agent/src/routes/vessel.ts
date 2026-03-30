@@ -195,6 +195,26 @@ export async function vesselRoutes(app: FastifyInstance) {
   });
 
   /**
+   * GET /api/vessel/pre-departure-items
+   * Returns pre-departure checklist items for this vessel's subchapter
+   */
+  app.get("/vessel/pre-departure-items", async (_request) => {
+    // Phase 0: static list based on Subchapter H (SS Jeremiah O'Brien)
+    const items = [
+      { id: "pd-1", label: "Steering gear tested", citation: "46 CFR 78.47" },
+      { id: "pd-2", label: "Whistle tested", citation: "46 CFR 78.47" },
+      { id: "pd-3", label: "Engine room communication verified", citation: "46 CFR 78.47" },
+      { id: "pd-4", label: "Passenger manifest filed with full names", citation: "46 CFR 78.33" },
+      { id: "pd-5", label: "Stability verified per trim book", citation: "46 CFR 78.53" },
+      { id: "pd-6", label: "Hatches and openings secured", citation: "46 CFR 78.50" },
+      { id: "pd-7", label: "Lifesaving equipment ready and accessible", citation: "46 CFR 78.77" },
+      { id: "pd-8", label: "Weather reviewed for route" },
+      { id: "pd-9", label: "Crew briefing completed" },
+    ];
+    return { items, count: items.length };
+  });
+
+  /**
    * DELETE /api/vessel/documents/:id
    * Delete a document (removes file and database record)
    */

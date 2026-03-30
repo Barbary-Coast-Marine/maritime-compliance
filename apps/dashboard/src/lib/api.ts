@@ -19,9 +19,22 @@ const BASE_URL =
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:3200";
 
 async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+    ...init?.headers as Record<string, string>,
+  };
+
+  // Include auth token when available
+  if (typeof window !== "undefined") {
+    const token = localStorage.getItem("maritime_token");
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
+    }
+  }
+
   const res = await fetch(`${BASE_URL}${path}`, {
     ...init,
-    headers: { "Content-Type": "application/json", ...init?.headers },
+    headers,
   });
   if (!res.ok) throw new Error(`API ${res.status}: ${res.statusText}`);
   return res.json() as Promise<T>;
@@ -120,12 +133,15 @@ export async function fetchComplianceStatus(): Promise<{
       }));
     return { checks, summary: data.summary };
   } catch {
-    const passing = mockChecks.filter((c) => c.status === "passing").length;
-    const warnings = mockChecks.filter((c) => c.status === "warning").length;
-    const violations = mockChecks.filter((c) => c.status === "overdue").length;
     return {
       checks: mockChecks,
-      summary: { total: mockChecks.length, passing, warnings, violations, info: 0 },
+      summary: {
+        total: mockChecks.length,
+        passing: mockChecks.filter((c) => c.status === "passing").length,
+        warnings: mockChecks.filter((c) => c.status === "warning").length,
+        violations: mockChecks.filter((c) => c.status === "overdue").length,
+        info: 0,
+      },
     };
   }
 }
@@ -246,8 +262,19 @@ export async function downloadAuditReport(start: string, end: string): Promise<B
   return res.blob();
 }
 
-// ── Pre-departure items (from mock, no dedicated endpoint) ──
+// ── Pre-departure items ─────────────────────────────────
 
-export function getPreDepartureItems(): PreDepartureItem[] {
-  return mockPreDep;
+export async function getPreDepartureItems(): Promise<PreDepartureItem[]> {
+  try {
+    const data = await apiFetch<{
+      items: Array<{
+        id: string;
+        label: string;
+        citation?: string;
+      }>;
+    }>("/api/vessel/pre-departure-items");
+    return data.items;
+  } catch {
+    return mockPreDep;
+  }
 }
