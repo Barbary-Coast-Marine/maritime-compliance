@@ -15,8 +15,14 @@ const categoryLabels: Record<CheckCategory, string> = {
 const categoryOrder: CheckCategory[] = ["drills", "inspections", "certificates", "pre_departure"];
 
 function formatDate(d: string | null) {
-  if (!d) return "Never";
+  if (!d) return null;
   return new Date(d).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+}
+
+function daysOverdue(nextDue: string): number {
+  const due = new Date(nextDue);
+  const now = new Date();
+  return Math.floor((now.getTime() - due.getTime()) / (1000 * 60 * 60 * 24));
 }
 
 export default function ChecksPage() {
@@ -117,8 +123,12 @@ export default function ChecksPage() {
                     )}
                   </div>
                   <div className="flex gap-6 mt-2 ml-6 text-xs text-slate-muted">
-                    <span>Last: {formatDate(item.lastCompleted)}</span>
-                    <span>Next: {formatDate(item.nextDue)}</span>
+                    <span>Last: {formatDate(item.lastCompleted) || "No record on file"}</span>
+                    {item.status === "overdue" && item.nextDue && new Date(item.nextDue) < new Date() ? (
+                      <span className="text-status-red font-semibold">{daysOverdue(item.nextDue)} days overdue</span>
+                    ) : (
+                      <span>Next: {formatDate(item.nextDue) || "\u2014"}</span>
+                    )}
                   </div>
 
                   {/* Inline log form */}

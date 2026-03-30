@@ -303,6 +303,7 @@ export interface Alert {
   severity: "critical" | "warning" | "info";
   title: string;
   description: string;
+  detail?: string;
   dueDate?: string;
   createdAt: string;
   resolved: boolean;

@@ -64,7 +64,18 @@ export async function authRoutes(app: FastifyInstance) {
    * Get current authenticated user
    */
   app.get("/auth/me", { preHandler: authPreHandler }, async (request) => {
-    return { user: request.user };
+    const [dbUser] = await db.select().from(users).where(eq(users.id, request.user!.id)).limit(1);
+    return {
+      user: {
+        id: dbUser.id,
+        username: dbUser.username,
+        displayName: dbUser.displayName,
+        role: dbUser.role,
+        vesselId: dbUser.vesselId,
+        email: dbUser.email,
+        phone: dbUser.phone,
+      }
+    };
   });
 
   /**

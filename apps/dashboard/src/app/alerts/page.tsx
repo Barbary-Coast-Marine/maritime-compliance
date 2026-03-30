@@ -24,6 +24,7 @@ export default function AlertsPage() {
   const [logNotes, setLogNotes] = useState("");
   const [logSaving, setLogSaving] = useState(false);
   const [logFlash, setLogFlash] = useState<string | null>(null);
+  const [expandedDetail, setExpandedDetail] = useState<string | null>(null);
 
   useEffect(() => {
     fetchAlerts().then((data) => {
@@ -112,10 +113,25 @@ export default function AlertsPage() {
                 </div>
                 <p className="text-sm font-medium">{alert.title}</p>
                 <p className="text-xs text-slate-muted mt-1">{alert.description}</p>
+                {alert.detail && (
+                  <button
+                    onClick={() => setExpandedDetail(expandedDetail === alert.id ? null : alert.id)}
+                    className="text-xs text-status-blue mt-1"
+                  >
+                    {expandedDetail === alert.id ? "Hide details" : "View details"}
+                  </button>
+                )}
+                {expandedDetail === alert.id && alert.detail && (
+                  <p className="text-xs text-slate-muted mt-1 bg-navy/50 rounded p-2">{alert.detail}</p>
+                )}
                 {showLogNow && logFormId !== alert.id && (
                   <button
                     onClick={() => openLogForm(alert.id)}
-                    className="inline-block mt-3 bg-status-red text-white text-sm font-semibold px-4 py-2 rounded-lg min-h-[40px]"
+                    className={`inline-block mt-3 text-sm font-semibold px-4 py-2 rounded-lg min-h-[40px] ${
+                      alert.severity === "critical"
+                        ? "bg-status-red text-white"
+                        : "bg-status-amber text-navy"
+                    }`}
                   >
                     Log Now
                   </button>

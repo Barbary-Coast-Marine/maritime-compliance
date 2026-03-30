@@ -82,6 +82,20 @@ export async function alertRoutes(app: FastifyInstance) {
 
       const evaluations = evaluateCompliance(activeRules, state);
 
+      // Generate short plain-English description based on alert context
+      function shortDescription(verdict: string, daysRemaining: number | null, nextDue: Date | string | null): string {
+        if (verdict === "violation") {
+          const overdueDays = daysRemaining != null ? Math.abs(daysRemaining) : 0;
+          return `${overdueDays} days overdue. Schedule immediately.`;
+        }
+        if (verdict === "warning" && nextDue) {
+          const dueDateStr = new Date(nextDue).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+          const days = daysRemaining != null ? daysRemaining : 0;
+          return `Due in ${days} days. Schedule before ${dueDateStr}.`;
+        }
+        return "Action required.";
+      }
+
       // Alerts = warnings + violations
       const alerts: Array<{
         rule_id: string;
@@ -91,7 +105,8 @@ export async function alertRoutes(app: FastifyInstance) {
         days_remaining: number | null;
         next_due: Date | string | null;
         last_completed: Date | string | null;
-        required_action: string;
+        description: string;
+        detail: string;
       }> = evaluations
         .filter((e) => e.verdict === "warning" || e.verdict === "violation")
         .map((e) => ({
@@ -102,7 +117,8 @@ export async function alertRoutes(app: FastifyInstance) {
           days_remaining: e.days_remaining,
           next_due: e.next_due,
           last_completed: e.last_completed,
-          required_action: e.required_action,
+          description: shortDescription(e.verdict, e.days_remaining, e.next_due),
+          detail: e.required_action,
         }));
 
       // Crew credential expiry alerts
@@ -125,6 +141,7 @@ export async function alertRoutes(app: FastifyInstance) {
         const crewName = `${row.firstName} ${row.lastName}`;
 
         if (daysRemaining < 0) {
+          const expiryStr = new Date(cred.expiryDate!).toLocaleDateString("en-US", { month: "short", day: "numeric" });
           alerts.push({
             rule_id: `CREW-CRED-${cred.id}`,
             title: `Expired Credential: ${crewName} \u2014 ${cred.title}`,
@@ -133,9 +150,11 @@ export async function alertRoutes(app: FastifyInstance) {
             days_remaining: daysRemaining,
             next_due: cred.expiryDate,
             last_completed: null,
-            required_action: `Renew ${cred.title} for ${crewName}`,
+            description: `Expired ${expiryStr}. Renew immediately.`,
+            detail: `Renew ${cred.title} for ${crewName}`,
           });
         } else if (daysRemaining <= 30) {
+          const expiryStr = new Date(cred.expiryDate!).toLocaleDateString("en-US", { month: "short", day: "numeric" });
           alerts.push({
             rule_id: `CREW-CRED-${cred.id}`,
             title: `Expiring Credential: ${crewName} \u2014 ${cred.title} (${daysRemaining} days)`,
@@ -144,9 +163,11 @@ export async function alertRoutes(app: FastifyInstance) {
             days_remaining: daysRemaining,
             next_due: cred.expiryDate,
             last_completed: null,
-            required_action: `Renew ${cred.title} for ${crewName} within ${daysRemaining} days`,
+            description: `Expires ${expiryStr}. Renew immediately.`,
+            detail: `Renew ${cred.title} for ${crewName} within ${daysRemaining} days`,
           });
         } else if (daysRemaining <= 90) {
+          const expiryStr = new Date(cred.expiryDate!).toLocaleDateString("en-US", { month: "short", day: "numeric" });
           alerts.push({
             rule_id: `CREW-CRED-${cred.id}`,
             title: `Expiring Credential: ${crewName} \u2014 ${cred.title} (${daysRemaining} days)`,
@@ -155,7 +176,8 @@ export async function alertRoutes(app: FastifyInstance) {
             days_remaining: daysRemaining,
             next_due: cred.expiryDate,
             last_completed: null,
-            required_action: `Renew ${cred.title} for ${crewName} before expiry`,
+            description: `Expires ${expiryStr}. Renew before expiry.`,
+            detail: `Renew ${cred.title} for ${crewName} before expiry`,
           });
         }
       }

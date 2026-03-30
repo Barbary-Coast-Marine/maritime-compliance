@@ -137,8 +137,9 @@ export default function BridgePage() {
           </h2>
           <div className="space-y-2">
             {upcoming.map((item) => (
-              <div
+              <Link
                 key={item.id}
+                href="/checks"
                 className="bg-navy-surface rounded-lg p-3 flex items-center gap-3 min-h-[48px]"
               >
                 <StatusDot status={item.status} />
@@ -149,7 +150,8 @@ export default function BridgePage() {
                 <span className="text-xs text-slate-muted whitespace-nowrap">
                   {item.status === "overdue" ? "Overdue" : `Due ${formatDate(item.nextDue)}`}
                 </span>
-              </div>
+                <span className="text-slate-muted text-sm">&rsaquo;</span>
+              </Link>
             ))}
           </div>
         </section>
@@ -218,16 +220,45 @@ function StatusDot({ status }: { status: string }) {
 }
 
 function TypeIcon({ type }: { type: string }) {
-  const icons: Record<string, string> = {
-    drill: "D", inspection: "I", fuel: "F", maintenance: "M", general: "G",
-  };
   const colors: Record<string, string> = {
     drill: "bg-status-blue", inspection: "bg-status-green", fuel: "bg-status-amber",
     maintenance: "bg-slate-muted", general: "bg-navy-border",
   };
+
+  const svgIcons: Record<string, React.ReactNode> = {
+    drill: (
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9" />
+        <path d="M13.73 21a2 2 0 01-3.46 0" />
+      </svg>
+    ),
+    inspection: (
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="11" cy="11" r="8" />
+        <line x1="21" y1="21" x2="16.65" y2="16.65" />
+      </svg>
+    ),
+    fuel: (
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M12 2.69l5.66 5.66a8 8 0 11-11.31 0z" />
+      </svg>
+    ),
+    maintenance: (
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z" />
+      </svg>
+    ),
+    general: (
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+        <polyline points="14 2 14 8 20 8" />
+      </svg>
+    ),
+  };
+
   return (
-    <span className={`w-8 h-8 rounded-full ${colors[type] || "bg-navy-border"} flex items-center justify-center text-xs font-bold text-white shrink-0`}>
-      {icons[type] || "?"}
+    <span className={`w-8 h-8 rounded-full ${colors[type] || "bg-navy-border"} flex items-center justify-center text-white shrink-0`}>
+      {svgIcons[type] || svgIcons.general}
     </span>
   );
 }

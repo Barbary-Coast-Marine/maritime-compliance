@@ -48,16 +48,10 @@ function AppContent({ children }: { children: React.ReactNode }) {
   return (
     <>
       {/* User bar */}
-      <div className="max-w-3xl mx-auto px-4 pt-3 flex items-center justify-between">
-        <span className="text-xs text-slate-muted truncate max-w-[60%]">
+      <div className="max-w-3xl mx-auto px-4 pt-3">
+        <span className="text-xs text-slate-muted truncate block">
           {user?.displayName || user?.username}
         </span>
-        <button
-          onClick={logout}
-          className="text-xs text-slate-muted hover:text-slate-text transition-colors"
-        >
-          Sign out
-        </button>
       </div>
 
       {/* Main content — pb accounts for nav height + iPhone safe area */}

@@ -214,7 +214,8 @@ export async function fetchAlerts(): Promise<Alert[]> {
         days_remaining: number | null;
         next_due: string | null;
         last_completed: string | null;
-        required_action: string;
+        description: string;
+        detail: string;
       }>;
       count: number;
     }>("/api/alerts");
@@ -223,7 +224,8 @@ export async function fetchAlerts(): Promise<Alert[]> {
       id: a.rule_id,
       severity: mapSeverity(a.severity),
       title: a.title,
-      description: a.required_action,
+      description: a.description,
+      detail: a.detail,
       dueDate: a.next_due?.split("T")[0],
       createdAt: new Date().toISOString(),
       resolved: false,
