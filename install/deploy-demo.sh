@@ -83,10 +83,7 @@ log "Installing dependencies..."
 cd $APP_DIR
 sudo -u $APP_USER pnpm install --frozen-lockfile
 
-log "Building vessel-agent..."
-sudo -u $APP_USER pnpm --filter @maritime/vessel-agent build
-
-log "Building dashboard..."
+log "Building dashboard (Next.js production build)..."
 sudo -u $APP_USER pnpm --filter dashboard build
 
 # ─── Database migrations + seed ──────────────────────────────────────────────
@@ -104,8 +101,8 @@ module.exports = {
     {
       name: "vessel-agent",
       cwd: "/opt/maritime/apps/vessel-agent",
-      script: "node",
-      args: "--loader tsx/esm src/server.ts",
+      script: "../../node_modules/.bin/tsx",
+      args: "src/server.ts",
       env: {
         NODE_ENV: "production",
       },

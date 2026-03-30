@@ -102,6 +102,9 @@ importers:
       '@types/node':
         specifier: ^22.0.0
         version: 22.19.15
+      '@types/pdfkit':
+        specifier: ^0.17.5
+        version: 0.17.5
       tsx:
         specifier: ^4.19.0
         version: 4.21.0
@@ -986,6 +989,9 @@ packages:
 
   '@types/node@22.19.15':
     resolution: {integrity: sha512-F0R/h2+dsy5wJAUe3tAU6oqa2qbWY5TpNfL/RGmo1y38hiyO1w3x2jPtt76wmuaJI4DQnOBu21cNXQ2STIUUWg==}
+
+  '@types/pdfkit@0.17.5':
+    resolution: {integrity: sha512-T3ZHnvF91HsEco5ClhBCOuBwobZfPcI2jaiSHybkkKYq4KhVIIurod94JVKvDIG0JXT6o3KiERC0X0//m8dyrg==}
 
   '@types/react-dom@19.2.3':
     resolution: {integrity: sha512-jp2L/eY6fn+KgVVQAOqYItbF0VY/YApe5Mz2F0aykSO8gx31bYCZyvSeYxCHKvzHG5eZjc+zyaS5BrBWya2+kQ==}
@@ -2235,6 +2241,10 @@ snapshots:
   '@types/node@22.19.15':
     dependencies:
       undici-types: 6.21.0
+
+  '@types/pdfkit@0.17.5':
+    dependencies:
+      '@types/node': 22.19.15
 
   '@types/react-dom@19.2.3(@types/react@19.2.14)':
     dependencies:
