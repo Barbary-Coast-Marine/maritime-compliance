@@ -1,4 +1,8 @@
-import { complianceChecks, type CheckCategory } from "@/lib/mock-data";
+"use client";
+
+import { useEffect, useState } from "react";
+import { fetchComplianceStatus } from "@/lib/api";
+import type { ComplianceCheck, CheckCategory } from "@/lib/mock-data";
 
 const categoryLabels: Record<CheckCategory, string> = {
   drills: "Safety Drills",
@@ -15,12 +19,36 @@ function formatDate(d: string | null) {
 }
 
 export default function ChecksPage() {
+  const [checks, setChecks] = useState<ComplianceCheck[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchComplianceStatus().then((data) => {
+      setChecks(data.checks);
+      setLoading(false);
+    });
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <h1 className="text-xl font-bold">Compliance Checks</h1>
+        <div className="space-y-3 animate-pulse">
+          {[1, 2, 3, 4, 5].map((i) => (
+            <div key={i} className="bg-navy-surface rounded-lg h-20" />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <h1 className="text-xl font-bold">Compliance Checks</h1>
 
       {categoryOrder.map((cat) => {
-        const items = complianceChecks.filter((c) => c.category === cat);
+        const items = checks.filter((c) => c.category === cat);
+        if (items.length === 0) return null;
         return (
           <section key={cat}>
             <h2 className="text-sm font-semibold text-slate-muted uppercase tracking-wider mb-2">
