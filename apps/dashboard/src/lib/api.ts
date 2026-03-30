@@ -252,6 +252,15 @@ export async function createLogbookEntry(body: {
   }
 }
 
+// ── Log Compliance Completion ────────────────────────────
+
+export async function logComplianceCompletion(ruleId: string, completedBy: string, notes?: string) {
+  return apiFetch<{ success: boolean; entry_id: string; completed_at: string }>(
+    "/api/compliance/log-completion",
+    { method: "POST", body: JSON.stringify({ rule_id: ruleId, completed_by: completedBy, notes }) }
+  );
+}
+
 // ── Reports ─────────────────────────────────────────────
 
 export async function downloadAuditReport(start: string, end: string): Promise<Blob> {
@@ -259,6 +268,22 @@ export async function downloadAuditReport(start: string, end: string): Promise<B
     `${BASE_URL}/api/reports/audit?start=${start}&end=${end}`
   );
   if (!res.ok) throw new Error(`Report generation failed: ${res.status}`);
+  return res.blob();
+}
+
+export async function downloadDrillReport(start: string, end: string): Promise<Blob> {
+  const res = await fetch(
+    `${BASE_URL}/api/reports/drills?start=${start}&end=${end}`
+  );
+  if (!res.ok) throw new Error(`Drill report generation failed: ${res.status}`);
+  return res.blob();
+}
+
+export async function downloadPreDepartureReport(start: string, end: string): Promise<Blob> {
+  const res = await fetch(
+    `${BASE_URL}/api/reports/pre-departure?start=${start}&end=${end}`
+  );
+  if (!res.ok) throw new Error(`Pre-departure report generation failed: ${res.status}`);
   return res.blob();
 }
 

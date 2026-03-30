@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import Link from "next/link";
 import { fetchVessel, fetchComplianceStatus, fetchLogbook } from "@/lib/api";
 import type { ComplianceCheck, LogbookEntry } from "@/lib/mock-data";
@@ -14,6 +14,25 @@ export default function BridgePage() {
   const [checks, setChecks] = useState<ComplianceCheck[]>([]);
   const [logs, setLogs] = useState<LogbookEntry[]>([]);
   const [loading, setLoading] = useState(true);
+  const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
+  const [secondsAgo, setSecondsAgo] = useState(0);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const tickRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const refreshData = useCallback(async () => {
+    try {
+      const [c, l] = await Promise.all([
+        fetchComplianceStatus(),
+        fetchLogbook(undefined, 4),
+      ]);
+      setChecks(c.checks);
+      setLogs(l.entries.slice(0, 4));
+      setLastUpdated(new Date());
+      setSecondsAgo(0);
+    } catch {
+      // silently fail on refresh
+    }
+  }, []);
 
   useEffect(() => {
     Promise.all([
@@ -25,8 +44,29 @@ export default function BridgePage() {
       setChecks(c.checks);
       setLogs(l.entries.slice(0, 4));
       setLoading(false);
+      setLastUpdated(new Date());
     });
   }, []);
+
+  // Auto-refresh every 30 seconds
+  useEffect(() => {
+    intervalRef.current = setInterval(() => {
+      refreshData();
+    }, 30000);
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+  }, [refreshData]);
+
+  // Tick "seconds ago" counter every 10s
+  useEffect(() => {
+    tickRef.current = setInterval(() => {
+      setSecondsAgo(Math.floor((Date.now() - lastUpdated.getTime()) / 1000));
+    }, 10000);
+    return () => {
+      if (tickRef.current) clearInterval(tickRef.current);
+    };
+  }, [lastUpdated]);
 
   if (loading) return <LoadingSkeleton />;
 
@@ -48,6 +88,8 @@ export default function BridgePage() {
     .sort((a, b) => new Date(a.nextDue).getTime() - new Date(b.nextDue).getTime())
     .slice(0, 5);
 
+  const updatedText = secondsAgo < 10 ? "Just now" : `${secondsAgo}s ago`;
+
   return (
     <div className="space-y-5">
       {/* Traffic light hero */}
@@ -57,7 +99,7 @@ export default function BridgePage() {
         </div>
         <h1 className="text-xl font-bold mt-4">{vessel?.name}</h1>
         <p className="text-slate-muted text-sm">
-          COI expires {vessel?.coiExpiry ? formatDate(vessel.coiExpiry) : "—"}
+          COI expires {vessel?.coiExpiry ? formatDate(vessel.coiExpiry) : "\u2014"}
         </p>
       </div>
 
@@ -67,6 +109,9 @@ export default function BridgePage() {
         <StatBox count={warnings} label="Due Soon" color="text-status-amber" border="border-status-amber/30" />
         <StatBox count={overdue} label="Overdue" color="text-status-red" border="border-status-red/30" />
       </div>
+
+      {/* Last updated indicator */}
+      <p className="text-xs text-slate-muted text-center">Last updated {updatedText}</p>
 
       {/* Action buttons */}
       <div className="grid grid-cols-2 gap-3">

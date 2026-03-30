@@ -663,10 +663,11 @@ export async function adminRoutes(app: FastifyInstance) {
           ruleCode: ruleId,
           triggerType: "calendar",
           isActive: body.is_active ?? true,
+          triggerConfig: {},
           severityLevels:
             body.warning_days != null || body.critical_days != null
               ? { warning_days: body.warning_days, critical_days: body.critical_days }
-              : null,
+              : {},
           requiredAction: "",
           deadlineCalc: "",
         })

@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
-import { fetchAlerts } from "@/lib/api";
+import { fetchAlerts, logComplianceCompletion } from "@/lib/api";
+import { useAuth } from "@/lib/auth-context";
 import type { Alert } from "@/lib/mock-data";
 
 function formatDate(d: string) {
@@ -16,8 +16,14 @@ const severityConfig = {
 } as const;
 
 export default function AlertsPage() {
+  const { user } = useAuth();
   const [alerts, setAlerts] = useState<Alert[]>([]);
   const [loading, setLoading] = useState(true);
+  const [logFormId, setLogFormId] = useState<string | null>(null);
+  const [logAuthor, setLogAuthor] = useState("");
+  const [logNotes, setLogNotes] = useState("");
+  const [logSaving, setLogSaving] = useState(false);
+  const [logFlash, setLogFlash] = useState<string | null>(null);
 
   useEffect(() => {
     fetchAlerts().then((data) => {
@@ -25,6 +31,37 @@ export default function AlertsPage() {
       setLoading(false);
     });
   }, []);
+
+  const openLogForm = (alertId: string) => {
+    setLogFormId(alertId);
+    setLogAuthor(user?.displayName || "");
+    setLogNotes("");
+  };
+
+  const closeLogForm = () => {
+    setLogFormId(null);
+    setLogAuthor("");
+    setLogNotes("");
+  };
+
+  const handleConfirmLog = async (alert: Alert) => {
+    setLogSaving(true);
+    try {
+      await logComplianceCompletion(alert.id, logAuthor, logNotes || undefined);
+      setAlerts((prev) =>
+        prev.map((a) =>
+          a.id === alert.id ? { ...a, resolved: true, resolvedAt: new Date().toISOString() } : a
+        )
+      );
+      setLogFlash(alert.id);
+      setTimeout(() => setLogFlash(null), 2000);
+      closeLogForm();
+    } catch {
+      // keep form open on error
+    } finally {
+      setLogSaving(false);
+    }
+  };
 
   const activeAlerts = alerts.filter((a) => !a.resolved);
   const resolvedAlerts = alerts.filter((a) => a.resolved);
@@ -54,6 +91,7 @@ export default function AlertsPage() {
         <div className="space-y-3">
           {activeAlerts.map((alert) => {
             const cfg = severityConfig[alert.severity];
+            const showLogNow = alert.severity === "critical" || alert.severity === "warning";
             return (
               <div
                 key={alert.id}
@@ -63,6 +101,9 @@ export default function AlertsPage() {
                   <span className={`${cfg.bg} ${cfg.text} text-xs font-bold px-2 py-1 rounded`}>
                     {cfg.label}
                   </span>
+                  {logFlash === alert.id && (
+                    <span className="text-xs font-semibold text-status-green">&#10003; Logged</span>
+                  )}
                   {alert.dueDate && (
                     <span className="text-xs text-slate-muted ml-auto">
                       Due {formatDate(alert.dueDate)}
@@ -71,13 +112,53 @@ export default function AlertsPage() {
                 </div>
                 <p className="text-sm font-medium">{alert.title}</p>
                 <p className="text-xs text-slate-muted mt-1">{alert.description}</p>
-                {alert.severity === "critical" && (
-                  <Link
-                    href="/logbook/new"
+                {showLogNow && logFormId !== alert.id && (
+                  <button
+                    onClick={() => openLogForm(alert.id)}
                     className="inline-block mt-3 bg-status-red text-white text-sm font-semibold px-4 py-2 rounded-lg min-h-[40px]"
                   >
                     Log Now
-                  </Link>
+                  </button>
+                )}
+
+                {/* Inline log form */}
+                {logFormId === alert.id && (
+                  <div className="mt-3 border-t border-navy-border pt-3 space-y-2">
+                    <p className="text-xs text-slate-muted font-semibold">{alert.title}</p>
+                    <div>
+                      <label className="text-xs text-slate-muted block mb-1">Author</label>
+                      <input
+                        type="text"
+                        value={logAuthor}
+                        onChange={(e) => setLogAuthor(e.target.value)}
+                        className="w-full bg-navy border border-navy-border rounded-lg px-3 py-2 text-sm text-slate-text min-h-[40px] focus:outline-none focus:border-status-blue"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs text-slate-muted block mb-1">Notes (optional)</label>
+                      <textarea
+                        value={logNotes}
+                        onChange={(e) => setLogNotes(e.target.value)}
+                        rows={2}
+                        className="w-full bg-navy border border-navy-border rounded-lg px-3 py-2 text-sm text-slate-text focus:outline-none focus:border-status-blue"
+                      />
+                    </div>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => handleConfirmLog(alert)}
+                        disabled={logSaving || !logAuthor}
+                        className="bg-status-blue text-white text-sm font-semibold px-4 py-2 rounded-lg min-h-[40px] disabled:opacity-50"
+                      >
+                        {logSaving ? "Saving..." : "Confirm"}
+                      </button>
+                      <button
+                        onClick={closeLogForm}
+                        className="bg-navy-surface border border-navy-border text-slate-muted text-sm px-4 py-2 rounded-lg min-h-[40px]"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
                 )}
               </div>
             );

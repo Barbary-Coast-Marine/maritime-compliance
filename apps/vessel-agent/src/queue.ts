@@ -1,6 +1,6 @@
 import PgBoss from "pg-boss";
 import { desc, eq } from "drizzle-orm";
-import { createDb, vessels, logbookEntries, complianceEvents } from "@maritime/db";
+import { createDb, vessels, logbookEntries, complianceEvents, complianceRules } from "@maritime/db";
 import { loadRules } from "@maritime/regulations";
 import {
   evaluateCompliance,
@@ -77,7 +77,20 @@ export async function setupJobQueue(connectionString?: string): Promise<PgBoss> 
         }
       }
 
-      // 3. Run evaluateCompliance
+      // 3. Apply DB overrides: filter inactive rules and apply threshold overrides
+      const dbRules = await db.select().from(complianceRules);
+      const dbRuleMap = new Map(dbRules.map((r) => [r.ruleCode, r]));
+      const activeRules = rules.filter((r) => {
+        const dbRule = dbRuleMap.get(r.rule_id);
+        if (dbRule && !dbRule.isActive) return false;
+        if (dbRule?.severityLevels) {
+          const levels = dbRule.severityLevels as { warning_days?: number; critical_days?: number };
+          if (levels.warning_days != null) r.trigger.warning_days = levels.warning_days;
+          if (levels.critical_days != null) r.trigger.critical_days = levels.critical_days;
+        }
+        return true;
+      });
+
       const vesselState: VesselComplianceState = {
         last_completed: lastCompleted,
         vessel_type: vessel.vesselType,
@@ -86,7 +99,7 @@ export async function setupJobQueue(connectionString?: string): Promise<PgBoss> 
         coi_expiry: vessel.coiExpiry ? new Date(vessel.coiExpiry) : undefined,
       };
 
-      const evaluations = evaluateCompliance(rules, vesselState);
+      const evaluations = evaluateCompliance(activeRules, vesselState);
       const overallStatus = getOverallStatus(evaluations);
 
       // 4. Persist results to compliance_events (insert new events)

@@ -1,6 +1,6 @@
 import { FastifyInstance } from "fastify";
 import { desc, eq } from "drizzle-orm";
-import { vessels, logbookEntries, type Database } from "@maritime/db";
+import { vessels, logbookEntries, complianceRules, type Database } from "@maritime/db";
 import { loadRules } from "@maritime/regulations";
 import {
   evaluateCompliance,
@@ -106,8 +106,22 @@ export async function complianceRoutes(app: FastifyInstance) {
 
       const { vessel, state } = result;
 
+      // Apply DB overrides: filter inactive rules and apply threshold overrides
+      const dbRules = await db.select().from(complianceRules);
+      const dbRuleMap = new Map(dbRules.map((r) => [r.ruleCode, r]));
+      const activeRules = rules.filter((r) => {
+        const dbRule = dbRuleMap.get(r.rule_id);
+        if (dbRule && !dbRule.isActive) return false;
+        if (dbRule?.severityLevels) {
+          const levels = dbRule.severityLevels as { warning_days?: number; critical_days?: number };
+          if (levels.warning_days != null) r.trigger.warning_days = levels.warning_days;
+          if (levels.critical_days != null) r.trigger.critical_days = levels.critical_days;
+        }
+        return true;
+      });
+
       // Run the rule engine
-      const evaluations = evaluateCompliance(rules, state);
+      const evaluations = evaluateCompliance(activeRules, state);
       const overallStatus = getOverallStatus(evaluations);
       const summary = getComplianceSummary(evaluations);
 
