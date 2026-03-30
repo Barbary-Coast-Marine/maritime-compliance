@@ -1,0 +1,35 @@
+rule_id: USCG-L-131-535-EXTINGUISHER
+status: draft
+verified_by: null
+verified_date: null
+legal_review: false
+
+citation: "46 CFR 131.535"
+title: "Fire Extinguisher Inspection"
+subchapter: L
+category: inspections
+
+applies_to:
+  vessel_types: [offshore_supply]
+  flag_states: [US]
+  gross_tonnage_min: null
+  gross_tonnage_max: null
+
+trigger:
+  type: calendar
+  interval_days: 30
+  warning_days: 5
+  critical_days: 1
+  metric: days_since_fire_extinguisher_inspection
+  frequency_text: "Monthly portable; annual fixed systems"
+
+required_action: >
+  Inspect all portable fire extinguishers monthly for charge, condition,
+  and accessibility. Fixed fire-extinguishing systems must be inspected
+  annually including agent quantity, piping integrity, discharge nozzles,
+  and control valves. Replace or recharge as necessary. Log inspection
+  results in official logbook.
+deadline_calc: "last_fire_extinguisher_inspection_date + 30 days (portable); + 365 days (fixed)"
+fine_range_usd: [5000, 25000]
+uscg_reference_url: "https://www.ecfr.gov/current/title-46/section-131.535"
+notes: "Portable extinguishers monthly; fixed systems annually."

@@ -1,0 +1,35 @@
+rule_id: USCG-I-97-153-STABILITY
+status: draft
+verified_by: null
+verified_date: null
+legal_review: false
+
+citation: "46 CFR 97.15-3"
+title: "Stability Verification"
+subchapter: I
+category: pre_departure
+
+applies_to:
+  vessel_types: [cargo]
+  flag_states: [US]
+  gross_tonnage_min: null
+  gross_tonnage_max: null
+
+trigger:
+  type: event
+  interval_days: null
+  warning_days: null
+  critical_days: null
+  metric: null
+  frequency_text: "Pre-departure"
+
+required_action: >
+  Verify vessel stability prior to departure. Confirm loading condition
+  meets approved stability criteria. Check draft readings, calculate
+  GM (metacentric height), and verify compliance with stability booklet.
+  Ensure cargo distribution does not compromise vessel stability.
+  Log verification in official logbook.
+deadline_calc: "Before each departure"
+fine_range_usd: [10000, 50000]
+uscg_reference_url: "https://www.ecfr.gov/current/title-46/section-97.15-3"
+notes: "Master is responsible for ensuring vessel meets stability criteria at all times."

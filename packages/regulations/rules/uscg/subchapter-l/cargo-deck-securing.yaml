@@ -1,0 +1,35 @@
+rule_id: USCG-L-131-340-DECKSEC
+status: draft
+verified_by: null
+verified_date: null
+legal_review: false
+
+citation: "46 CFR 131.340"
+title: "Cargo Deck Securing"
+subchapter: L
+category: pre_departure
+
+applies_to:
+  vessel_types: [offshore_supply]
+  flag_states: [US]
+  gross_tonnage_min: null
+  gross_tonnage_max: null
+
+trigger:
+  type: event
+  interval_days: null
+  warning_days: null
+  critical_days: null
+  metric: null
+  frequency_text: "Pre-departure"
+
+required_action: >
+  Inspect all cargo deck securing arrangements prior to departure.
+  Verify lashings, chains, turnbuckles, and tie-downs are properly
+  applied and adequate for anticipated sea conditions. Ensure deck
+  cargo does not obstruct crew access to safety equipment or
+  navigation. Log inspection in official logbook.
+deadline_calc: "Before each departure"
+fine_range_usd: [10000, 50000]
+uscg_reference_url: "https://www.ecfr.gov/current/title-46/section-131.340"
+notes: null

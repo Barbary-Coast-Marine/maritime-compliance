@@ -1,0 +1,34 @@
+rule_id: USCG-I-97-3733-LIFERAFT
+status: draft
+verified_by: null
+verified_date: null
+legal_review: false
+
+citation: "46 CFR 97.37-33"
+title: "Liferaft Annual Servicing"
+subchapter: I
+category: maintenance
+
+applies_to:
+  vessel_types: [cargo]
+  flag_states: [US]
+  gross_tonnage_min: null
+  gross_tonnage_max: null
+
+trigger:
+  type: calendar
+  interval_days: 365
+  warning_days: 30
+  critical_days: 7
+  metric: days_since_liferaft_servicing
+  frequency_text: "Annual"
+
+required_action: >
+  Have all inflatable liferafts serviced at a USCG-approved servicing
+  facility. Service must include complete inspection, inflation test,
+  replacement of expired components, and repacking. Verify servicing
+  sticker and expiration date upon return. Maintain servicing records.
+deadline_calc: "last_liferaft_servicing_date + 365 days"
+fine_range_usd: [5000, 25000]
+uscg_reference_url: "https://www.ecfr.gov/current/title-46/section-97.37-33"
+notes: null

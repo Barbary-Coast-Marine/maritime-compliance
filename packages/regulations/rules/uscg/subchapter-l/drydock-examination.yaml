@@ -1,0 +1,35 @@
+rule_id: USCG-L-126-130-DRYDOCK
+status: draft
+verified_by: null
+verified_date: null
+legal_review: false
+
+citation: "46 CFR 126.130"
+title: "Drydock Examination"
+subchapter: L
+category: inspections
+
+applies_to:
+  vessel_types: [offshore_supply]
+  flag_states: [US]
+  gross_tonnage_min: null
+  gross_tonnage_max: null
+
+trigger:
+  type: calendar
+  interval_days: 1825
+  warning_days: 180
+  critical_days: 30
+  metric: days_since_drydock_examination
+  frequency_text: "Every 5 years"
+
+required_action: >
+  Haul out vessel for drydock examination. USCG marine inspector must
+  examine hull plating, sea valves, propeller, rudder, stern tube,
+  and underwater fittings. Correct any deficiencies identified. Vessel
+  must be presented in clean condition for examination. Coordinate
+  scheduling with OCMI.
+deadline_calc: "last_drydock_examination_date + 1825 days"
+fine_range_usd: [10000, 50000]
+uscg_reference_url: "https://www.ecfr.gov/current/title-46/section-126.130"
+notes: "Intermediate underwater survey may be accepted in lieu of drydock at OCMI discretion."

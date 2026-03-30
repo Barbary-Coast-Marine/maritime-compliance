@@ -1,0 +1,34 @@
+rule_id: USCG-I-97-1560-EXTINGUISHER
+status: draft
+verified_by: null
+verified_date: null
+legal_review: false
+
+citation: "46 CFR 97.15-60"
+title: "Fire Extinguisher Inspection"
+subchapter: I
+category: inspections
+
+applies_to:
+  vessel_types: [cargo]
+  flag_states: [US]
+  gross_tonnage_min: null
+  gross_tonnage_max: null
+
+trigger:
+  type: calendar
+  interval_days: 365
+  warning_days: 30
+  critical_days: 7
+  metric: days_since_fire_extinguisher_inspection
+  frequency_text: "Annual"
+
+required_action: >
+  Inspect all portable and semi-portable fire extinguishers. Verify
+  charge, condition, accessibility, and signage. Replace or recharge
+  as necessary. Verify maintenance tags are current. Log inspection
+  results in official logbook.
+deadline_calc: "last_fire_extinguisher_inspection_date + 365 days"
+fine_range_usd: [5000, 25000]
+uscg_reference_url: "https://www.ecfr.gov/current/title-46/section-97.15-60"
+notes: null

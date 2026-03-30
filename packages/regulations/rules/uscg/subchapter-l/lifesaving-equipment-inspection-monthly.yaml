@@ -1,0 +1,35 @@
+rule_id: USCG-L-131-590-LIFESAVE-M
+status: draft
+verified_by: null
+verified_date: null
+legal_review: false
+
+citation: "46 CFR 131.590"
+title: "Lifesaving Equipment Inspection — Monthly"
+subchapter: L
+category: inspections
+
+applies_to:
+  vessel_types: [offshore_supply]
+  flag_states: [US]
+  gross_tonnage_min: null
+  gross_tonnage_max: null
+
+trigger:
+  type: calendar
+  interval_days: 30
+  warning_days: 5
+  critical_days: 1
+  metric: days_since_lifesaving_monthly_inspection
+  frequency_text: "Monthly"
+
+required_action: >
+  Conduct monthly detailed inspection of all lifesaving equipment.
+  Inventory all equipment against the vessel's approved list. Test
+  mechanical operation of davits, winches, and release mechanisms.
+  Inspect lifeboat engines and fuel. Verify expiration dates on
+  pyrotechnics and rations. Log in official logbook.
+deadline_calc: "last_lifesaving_monthly_inspection_date + 30 days"
+fine_range_usd: [5000, 25000]
+uscg_reference_url: "https://www.ecfr.gov/current/title-46/section-131.590"
+notes: null

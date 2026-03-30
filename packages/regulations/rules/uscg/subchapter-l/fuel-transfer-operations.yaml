@@ -1,0 +1,36 @@
+rule_id: USCG-L-131-340-FUELTX
+status: draft
+verified_by: null
+verified_date: null
+legal_review: false
+
+citation: "46 CFR 131.340"
+title: "Fuel Transfer Operations"
+subchapter: L
+category: inspections
+
+applies_to:
+  vessel_types: [offshore_supply]
+  flag_states: [US]
+  gross_tonnage_min: null
+  gross_tonnage_max: null
+
+trigger:
+  type: event
+  interval_days: null
+  warning_days: null
+  critical_days: null
+  metric: null
+  frequency_text: "Per operation"
+
+required_action: >
+  Follow fuel transfer safety procedures for each operation. Post
+  warning signs, close openings to accommodation spaces, ensure
+  fire-fighting equipment is ready, maintain communication between
+  vessel and receiving facility, monitor for spills, and have
+  containment materials available. Record transfer details including
+  quantities in official logbook.
+deadline_calc: "Before and during each fuel transfer operation"
+fine_range_usd: [10000, 50000]
+uscg_reference_url: "https://www.ecfr.gov/current/title-46/section-131.340"
+notes: "Applies to all fuel transfer operations whether bunkering or supplying offshore platforms."

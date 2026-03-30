@@ -1,0 +1,35 @@
+rule_id: USCG-I-97-05-CREWLIC
+status: draft
+verified_by: null
+verified_date: null
+legal_review: false
+
+citation: "46 CFR 97.05"
+title: "Crew Licensing Verification"
+subchapter: I
+category: certificates
+
+applies_to:
+  vessel_types: [cargo]
+  flag_states: [US]
+  gross_tonnage_min: null
+  gross_tonnage_max: null
+
+trigger:
+  type: event
+  interval_days: null
+  warning_days: null
+  critical_days: null
+  metric: null
+  frequency_text: "Continuous"
+
+required_action: >
+  Verify all crew members hold valid USCG Merchant Mariner Credentials
+  (MMC) appropriate for their assigned duties and vessel tonnage. Confirm
+  required endorsements including STCW certifications, medical certificates,
+  and drug testing compliance. Maintain copies of credentials on board.
+  Verify before each voyage and upon crew changes.
+deadline_calc: "Continuous — verify before each voyage and upon crew changes"
+fine_range_usd: [10000, 50000]
+uscg_reference_url: "https://www.ecfr.gov/current/title-46/section-97.05"
+notes: "Operating with unlicensed or improperly credentialed crew is a serious violation."

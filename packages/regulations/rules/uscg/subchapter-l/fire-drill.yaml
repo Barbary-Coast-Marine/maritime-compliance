@@ -1,0 +1,35 @@
+rule_id: USCG-L-131-560-FIRE
+status: draft
+verified_by: null
+verified_date: null
+legal_review: false
+
+citation: "46 CFR 131.560"
+title: "Fire Drill"
+subchapter: L
+category: drills
+
+applies_to:
+  vessel_types: [offshore_supply]
+  flag_states: [US]
+  gross_tonnage_min: null
+  gross_tonnage_max: null
+
+trigger:
+  type: calendar
+  interval_days: 30
+  warning_days: 5
+  critical_days: 1
+  metric: days_since_fire_drill
+  frequency_text: "Monthly minimum"
+
+required_action: >
+  Conduct fire drill with all crew. Must include: sounding general alarm,
+  reporting to assigned stations, simulating fire emergency, starting fire
+  pumps, testing hose outlets, demonstrating breathing apparatus, operating
+  watertight and fire doors, closing ventilation to protected spaces.
+  Log in official logbook.
+deadline_calc: "last_fire_drill_date + 30 days"
+fine_range_usd: [5000, 25000]
+uscg_reference_url: "https://www.ecfr.gov/current/title-46/section-131.560"
+notes: null

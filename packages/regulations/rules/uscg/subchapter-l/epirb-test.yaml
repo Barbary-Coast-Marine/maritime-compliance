@@ -1,0 +1,35 @@
+rule_id: USCG-L-131-590-EPIRB
+status: draft
+verified_by: null
+verified_date: null
+legal_review: false
+
+citation: "46 CFR 131.590"
+title: "EPIRB Test"
+subchapter: L
+category: inspections
+
+applies_to:
+  vessel_types: [offshore_supply]
+  flag_states: [US]
+  gross_tonnage_min: null
+  gross_tonnage_max: null
+
+trigger:
+  type: calendar
+  interval_days: 30
+  warning_days: 5
+  critical_days: 1
+  metric: days_since_epirb_test
+  frequency_text: "Monthly"
+
+required_action: >
+  Test EPIRB (Emergency Position Indicating Radio Beacon) using
+  built-in self-test function. Verify battery expiration date,
+  hydrostatic release mechanism, registration information, and
+  proper stowage. Do not activate distress signal during test.
+  Log in official logbook.
+deadline_calc: "last_epirb_test_date + 30 days"
+fine_range_usd: [5000, 15000]
+uscg_reference_url: "https://www.ecfr.gov/current/title-46/section-131.590"
+notes: null

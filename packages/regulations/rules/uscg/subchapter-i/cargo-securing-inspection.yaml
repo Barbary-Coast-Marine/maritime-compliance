@@ -1,0 +1,35 @@
+rule_id: USCG-I-97-1510-CARGOSEC
+status: draft
+verified_by: null
+verified_date: null
+legal_review: false
+
+citation: "46 CFR 97.15-10"
+title: "Cargo Securing Inspection"
+subchapter: I
+category: pre_departure
+
+applies_to:
+  vessel_types: [cargo]
+  flag_states: [US]
+  gross_tonnage_min: null
+  gross_tonnage_max: null
+
+trigger:
+  type: event
+  interval_days: null
+  warning_days: null
+  critical_days: null
+  metric: null
+  frequency_text: "Pre-departure"
+
+required_action: >
+  Inspect all cargo securing arrangements prior to departure. Verify
+  lashings, chocks, dunnage, and tie-downs are properly applied and
+  adequate for anticipated sea conditions. Ensure cargo is stowed in
+  accordance with the vessel's Cargo Securing Manual. Log inspection
+  in official logbook.
+deadline_calc: "Before each departure"
+fine_range_usd: [10000, 50000]
+uscg_reference_url: "https://www.ecfr.gov/current/title-46/section-97.15-10"
+notes: null

@@ -1,0 +1,35 @@
+rule_id: USCG-I-52-01-BOILER
+status: draft
+verified_by: null
+verified_date: null
+legal_review: false
+
+citation: "46 CFR Part 52"
+title: "Boiler Inspection"
+subchapter: I
+category: inspections
+
+applies_to:
+  vessel_types: [cargo]
+  flag_states: [US]
+  gross_tonnage_min: null
+  gross_tonnage_max: null
+
+trigger:
+  type: calendar
+  interval_days: 365
+  warning_days: 30
+  critical_days: 7
+  metric: days_since_boiler_inspection
+  frequency_text: "Annual (if steam/boiler equipped)"
+
+required_action: >
+  Conduct annual inspection of all boilers and pressure vessels by a
+  USCG marine inspector or authorized classification society surveyor.
+  Includes internal and external examination, safety valve testing,
+  pressure testing as required, and verification of all fittings and
+  controls. Correct any deficiencies before returning to service.
+deadline_calc: "last_boiler_inspection_date + 365 days"
+fine_range_usd: [10000, 50000]
+uscg_reference_url: "https://www.ecfr.gov/current/title-46/part-52"
+notes: "Applicable only to vessels equipped with steam boilers or unfired pressure vessels."

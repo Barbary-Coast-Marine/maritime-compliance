@@ -1,0 +1,35 @@
+rule_id: USCG-L-131-340-DECKWT
+status: draft
+verified_by: null
+verified_date: null
+legal_review: false
+
+citation: "46 CFR 131.340"
+title: "Deck Cargo Weight Limit Compliance"
+subchapter: L
+category: inspections
+
+applies_to:
+  vessel_types: [offshore_supply]
+  flag_states: [US]
+  gross_tonnage_min: null
+  gross_tonnage_max: null
+
+trigger:
+  type: event
+  interval_days: null
+  warning_days: null
+  critical_days: null
+  metric: null
+  frequency_text: "Per loading"
+
+required_action: >
+  Verify deck cargo weight does not exceed the maximum allowable
+  deck cargo weight specified on the vessel's Certificate of Inspection.
+  Confirm cargo weight from shipping documents or scales. Verify
+  cargo distribution maintains vessel stability within approved limits.
+  Log total deck cargo weight in official logbook.
+deadline_calc: "Before departure after each cargo loading"
+fine_range_usd: [10000, 50000]
+uscg_reference_url: "https://www.ecfr.gov/current/title-46/section-131.340"
+notes: "Maximum deck cargo weight is specified on the COI. Exceeding this limit is a serious violation."

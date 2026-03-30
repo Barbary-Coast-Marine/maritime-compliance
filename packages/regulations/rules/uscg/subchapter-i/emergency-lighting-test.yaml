@@ -1,0 +1,34 @@
+rule_id: USCG-I-97-1525-ELIGHT
+status: draft
+verified_by: null
+verified_date: null
+legal_review: false
+
+citation: "46 CFR 97.15-25"
+title: "Emergency Lighting Test"
+subchapter: I
+category: inspections
+
+applies_to:
+  vessel_types: [cargo]
+  flag_states: [US]
+  gross_tonnage_min: null
+  gross_tonnage_max: null
+
+trigger:
+  type: calendar
+  interval_days: 30
+  warning_days: 5
+  critical_days: 1
+  metric: days_since_emergency_lighting_test
+  frequency_text: "Monthly"
+
+required_action: >
+  Test all emergency lighting systems including battery-powered
+  emergency lanterns, escape route lighting, and muster station
+  illumination. Verify automatic activation on loss of main power.
+  Replace defective units immediately. Log in official logbook.
+deadline_calc: "last_emergency_lighting_test_date + 30 days"
+fine_range_usd: [5000, 15000]
+uscg_reference_url: "https://www.ecfr.gov/current/title-46/section-97.15-25"
+notes: null

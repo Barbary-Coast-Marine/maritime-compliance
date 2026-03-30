@@ -1,0 +1,36 @@
+rule_id: USCG-L-131-300-STABILITY
+status: draft
+verified_by: null
+verified_date: null
+legal_review: false
+
+citation: "46 CFR 131.300"
+title: "Stability Verification"
+subchapter: L
+category: pre_departure
+
+applies_to:
+  vessel_types: [offshore_supply]
+  flag_states: [US]
+  gross_tonnage_min: null
+  gross_tonnage_max: null
+
+trigger:
+  type: event
+  interval_days: null
+  warning_days: null
+  critical_days: null
+  metric: null
+  frequency_text: "Pre-departure after cargo operations"
+
+required_action: >
+  Verify vessel stability prior to departure and after each cargo
+  operation. Confirm loading condition meets approved stability criteria.
+  Check draft readings, calculate GM (metacentric height), and verify
+  compliance with stability booklet. Ensure deck cargo and tank
+  conditions do not compromise vessel stability. Log verification
+  in official logbook.
+deadline_calc: "Before each departure and after cargo operations"
+fine_range_usd: [10000, 50000]
+uscg_reference_url: "https://www.ecfr.gov/current/title-46/section-131.300"
+notes: "Critical for OSVs due to variable deck cargo and tank loading conditions."

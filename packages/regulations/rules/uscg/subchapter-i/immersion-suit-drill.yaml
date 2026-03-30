@@ -1,0 +1,33 @@
+rule_id: USCG-I-97-1555-IMMERSION
+status: draft
+verified_by: null
+verified_date: null
+legal_review: false
+
+citation: "46 CFR 97.15-55"
+title: "Immersion Suit Drill"
+subchapter: I
+category: drills
+
+applies_to:
+  vessel_types: [cargo]
+  flag_states: [US]
+  gross_tonnage_min: null
+  gross_tonnage_max: null
+
+trigger:
+  type: calendar
+  interval_days: 30
+  warning_days: 5
+  critical_days: 1
+  metric: days_since_immersion_suit_drill
+  frequency_text: "Monthly on cold water routes"
+
+required_action: >
+  Conduct immersion suit drill with all crew. Each crew member must don
+  an immersion suit within 2 minutes. Include instruction on proper
+  donning, use, and maintenance of immersion suits. Log in official logbook.
+deadline_calc: "last_immersion_suit_drill_date + 30 days"
+fine_range_usd: [5000, 25000]
+uscg_reference_url: "https://www.ecfr.gov/current/title-46/section-97.15-55"
+notes: "Required on cold water routes where water temperature may fall below 15°C."

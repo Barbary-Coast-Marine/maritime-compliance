@@ -1,0 +1,35 @@
+rule_id: USCG-L-131-310-STEERING
+status: draft
+verified_by: null
+verified_date: null
+legal_review: false
+
+citation: "46 CFR 131.310"
+title: "Steering Gear Test"
+subchapter: L
+category: pre_departure
+
+applies_to:
+  vessel_types: [offshore_supply]
+  flag_states: [US]
+  gross_tonnage_min: null
+  gross_tonnage_max: null
+
+trigger:
+  type: event
+  interval_days: null
+  warning_days: null
+  critical_days: null
+  metric: null
+  frequency_text: "Pre-departure"
+
+required_action: >
+  Test steering gear prior to departure. Operate main and auxiliary
+  steering gear through full range. Test all steering gear control
+  systems including remote and local stations. Verify emergency
+  steering procedures. Test communication between bridge and steering
+  gear compartment. Log in official logbook.
+deadline_calc: "Before each departure"
+fine_range_usd: [10000, 50000]
+uscg_reference_url: "https://www.ecfr.gov/current/title-46/section-131.310"
+notes: null
