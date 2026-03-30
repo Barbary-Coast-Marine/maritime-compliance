@@ -1,9 +1,30 @@
 import { FastifyInstance } from "fastify";
-import { eq } from "drizzle-orm";
-import { vessels, type Database } from "@maritime/db";
+import { eq, desc } from "drizzle-orm";
+import { vessels, documentVault, type Database } from "@maritime/db";
+import { authPreHandler } from "../middleware/auth.js";
+import path from "node:path";
+import fs from "node:fs/promises";
+import { createReadStream } from "node:fs";
+import crypto from "node:crypto";
+
+const VALID_DOC_TYPES = [
+  "coi",
+  "stability_letter",
+  "fcc_license",
+  "abs_certificate",
+  "drydock_report",
+  "crew_license",
+  "safety_plan",
+  "other",
+] as const;
+
+const UPLOAD_DIR = path.resolve("./data/documents");
 
 export async function vesselRoutes(app: FastifyInstance) {
   const db = (app as any).db as Database;
+
+  // Ensure upload directory exists
+  await fs.mkdir(UPLOAD_DIR, { recursive: true });
 
   /**
    * GET /api/vessel
@@ -64,19 +85,141 @@ export async function vesselRoutes(app: FastifyInstance) {
 
   /**
    * GET /api/vessel/documents
-   * List documents in the vault (placeholder)
+   * List all documents for the vessel, ordered by uploaded_at desc
    */
   app.get<{
     Querystring: { doc_type?: string };
-  }>("/vessel/documents", async (_request, _reply) => {
-    return { documents: [], count: 0 };
+  }>("/vessel/documents", async (request) => {
+    const [vessel] = await db.select().from(vessels).limit(1);
+    if (!vessel) {
+      return { documents: [], count: 0 };
+    }
+
+    let query = db
+      .select()
+      .from(documentVault)
+      .where(eq(documentVault.vesselId, vessel.id))
+      .orderBy(desc(documentVault.uploadedAt));
+
+    const documents = await query;
+
+    // Filter by doc_type in application if provided
+    const filtered = request.query.doc_type
+      ? documents.filter((d) => d.docType === request.query.doc_type)
+      : documents;
+
+    return { documents: filtered, count: filtered.length };
   });
 
   /**
    * POST /api/vessel/documents
-   * Upload a document (placeholder)
+   * Upload a document (multipart file upload, requires auth)
    */
-  app.post("/vessel/documents", async (_request, _reply) => {
-    return { success: true, document_id: "placeholder" };
+  app.post("/vessel/documents", { preHandler: authPreHandler }, async (request, reply) => {
+    const data = await request.file();
+    if (!data) {
+      return reply.status(400).send({ error: "No file uploaded" });
+    }
+
+    // Collect fields from multipart
+    const fields = data.fields as Record<string, any>;
+    const docType = fields.doc_type?.value as string;
+    const expiryDate = fields.expiry_date?.value as string | undefined;
+
+    if (!docType || !VALID_DOC_TYPES.includes(docType as any)) {
+      return reply.status(400).send({
+        error: `Invalid doc_type. Must be one of: ${VALID_DOC_TYPES.join(", ")}`,
+      });
+    }
+
+    const [vessel] = await db.select().from(vessels).limit(1);
+    if (!vessel) {
+      return reply.status(404).send({ error: "No vessel configured" });
+    }
+
+    // Generate unique filename to avoid collisions
+    const ext = path.extname(data.filename);
+    const uniqueName = `${crypto.randomUUID()}${ext}`;
+    const filePath = path.join(UPLOAD_DIR, uniqueName);
+
+    // Stream file to disk
+    const fileBuffer = await data.toBuffer();
+    await fs.writeFile(filePath, fileBuffer);
+
+    const [doc] = await db
+      .insert(documentVault)
+      .values({
+        vesselId: vessel.id,
+        docType,
+        filename: data.filename,
+        mimeType: data.mimetype,
+        filePath,
+        uploadedBy: request.user!.id,
+        expiryDate: expiryDate || null,
+      })
+      .returning();
+
+    return {
+      success: true,
+      document: doc,
+    };
+  });
+
+  /**
+   * GET /api/vessel/documents/:id/download
+   * Download a document file
+   */
+  app.get<{
+    Params: { id: string };
+  }>("/vessel/documents/:id/download", async (request, reply) => {
+    const [doc] = await db
+      .select()
+      .from(documentVault)
+      .where(eq(documentVault.id, request.params.id))
+      .limit(1);
+
+    if (!doc) {
+      return reply.status(404).send({ error: "Document not found" });
+    }
+
+    // Check file exists
+    try {
+      await fs.access(doc.filePath);
+    } catch {
+      return reply.status(404).send({ error: "File not found on disk" });
+    }
+
+    reply.header("Content-Type", doc.mimeType);
+    reply.header("Content-Disposition", `attachment; filename="${doc.filename}"`);
+    return reply.send(createReadStream(doc.filePath));
+  });
+
+  /**
+   * DELETE /api/vessel/documents/:id
+   * Delete a document (removes file and database record)
+   */
+  app.delete<{
+    Params: { id: string };
+  }>("/vessel/documents/:id", { preHandler: authPreHandler }, async (request, reply) => {
+    const [doc] = await db
+      .select()
+      .from(documentVault)
+      .where(eq(documentVault.id, request.params.id))
+      .limit(1);
+
+    if (!doc) {
+      return reply.status(404).send({ error: "Document not found" });
+    }
+
+    // Remove file from disk (ignore if already missing)
+    try {
+      await fs.unlink(doc.filePath);
+    } catch {
+      // File already gone, proceed with DB cleanup
+    }
+
+    await db.delete(documentVault).where(eq(documentVault.id, doc.id));
+
+    return { success: true, deleted: doc.id };
   });
 }

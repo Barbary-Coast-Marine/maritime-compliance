@@ -11,19 +11,24 @@
   },
   "dependencies": {
     "@fastify/cors": "^11.0.0",
+    "@fastify/multipart": "^9.4.0",
     "@maritime/db": "workspace:*",
     "@maritime/regulations": "workspace:*",
     "@maritime/types": "workspace:*",
+    "bcryptjs": "^3.0.3",
     "dotenv": "^16.4.0",
     "drizzle-orm": "^0.38.0",
     "fastify": "^5.2.0",
     "ioredis": "^5.4.0",
+    "jsonwebtoken": "^9.0.3",
     "pdfkit": "^0.18.0",
     "pg-boss": "^10.1.0",
     "pino": "^9.6.0",
     "postgres": "^3.4.0"
   },
   "devDependencies": {
+    "@types/bcryptjs": "^3.0.0",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^22.0.0",
     "tsx": "^4.19.0",
     "typescript": "^5.7.0"

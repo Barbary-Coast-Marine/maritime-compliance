@@ -1,5 +1,5 @@
 import { createDb, vessels, users, logbookEntries } from "./index";
-import crypto from "node:crypto";
+import bcrypt from "bcryptjs";
 
 const db = createDb();
 
@@ -29,13 +29,13 @@ async function seed() {
 
   console.log(`  Vessel created: ${vessel.name} (${vessel.id})`);
 
-  // Create default admin user (SHA-256 placeholder — use bcrypt in production)
-  const passwordHash = crypto.createHash("sha256").update("admin123").digest("hex");
+  // Create captain user with bcrypt-hashed password
+  const passwordHash = await bcrypt.hash("obrien2026", 10);
 
   const [user] = await db
     .insert(users)
     .values({
-      username: "admin",
+      username: "captain",
       passwordHash,
       role: "captain",
       vesselId: vessel.id,
