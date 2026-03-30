@@ -1,0 +1,35 @@
+rule_id: USCG-M-142-320-PILOT
+status: draft
+verified_by: null
+verified_date: null
+legal_review: false
+
+citation: "46 CFR 142.320"
+title: "Pilothouse Visibility Check"
+subchapter: M
+category: pre_departure
+
+applies_to:
+  vessel_types: [towing]
+  flag_states: [US]
+  gross_tonnage_min: null
+  gross_tonnage_max: null
+
+trigger:
+  type: event
+  interval_days: null
+  warning_days: null
+  critical_days: null
+  metric: pre_departure
+  frequency_text: "Before every departure"
+
+required_action: >
+  Verify adequate visibility from the pilothouse in all directions.
+  Ensure windows are clean and unobstructed, windshield wipers functional,
+  and searchlights operational. When pushing ahead, confirm visibility
+  over the tow is adequate or arrange alternative means of maintaining
+  lookout. Record in logbook.
+deadline_calc: "Before vessel departs"
+fine_range_usd: [5000, 25000]
+uscg_reference_url: "https://www.ecfr.gov/current/title-46/section-142.320"
+notes: "Visibility over tow is a frequent USCG examination finding on towing vessels."

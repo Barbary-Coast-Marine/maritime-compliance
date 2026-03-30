@@ -1,0 +1,35 @@
+rule_id: USCG-M-144-200-SECURITY
+status: draft
+verified_by: null
+verified_date: null
+legal_review: false
+
+citation: "46 CFR 144.200"
+title: "Vessel Security Plan"
+subchapter: M
+category: certificates
+
+applies_to:
+  vessel_types: [towing]
+  flag_states: [US]
+  gross_tonnage_min: null
+  gross_tonnage_max: null
+
+trigger:
+  type: calendar
+  interval_days: 365
+  warning_days: 60
+  critical_days: 14
+  metric: days_since_security_plan_review
+  frequency_text: "Annual review (per MTSA if applicable)"
+
+required_action: >
+  Review and update vessel security plan as required by the Maritime
+  Transportation Security Act (MTSA). Conduct security assessment,
+  verify crew security training is current, and ensure plan addresses
+  current MARSEC levels. Submit amendments to USCG for approval when
+  significant changes occur.
+deadline_calc: "last_security_plan_review_date + 365 days"
+fine_range_usd: [10000, 50000]
+uscg_reference_url: "https://www.ecfr.gov/current/title-46/section-144.200"
+notes: "Only applicable to towing vessels subject to MTSA requirements (e.g., CDC-carrying vessels)."

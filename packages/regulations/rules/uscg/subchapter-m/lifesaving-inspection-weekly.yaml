@@ -1,0 +1,34 @@
+rule_id: USCG-M-142-230-WEEKLY
+status: draft
+verified_by: null
+verified_date: null
+legal_review: false
+
+citation: "46 CFR 142.230"
+title: "Lifesaving Equipment Weekly Visual Inspection"
+subchapter: M
+category: inspections
+
+applies_to:
+  vessel_types: [towing]
+  flag_states: [US]
+  gross_tonnage_min: null
+  gross_tonnage_max: null
+
+trigger:
+  type: calendar
+  interval_days: 7
+  warning_days: 2
+  critical_days: 0
+  metric: days_since_lifesaving_weekly_inspection
+  frequency_text: "Weekly"
+
+required_action: >
+  Visual inspection of each lifesaving appliance to ensure ready for use.
+  Check life rings, lifejackets, immersion suits, and survival craft
+  for proper stowage and condition. Verify retro-reflective tape and
+  lights are functional. Record in logbook.
+deadline_calc: "last_lifesaving_weekly_inspection_date + 7 days"
+fine_range_usd: [2000, 15000]
+uscg_reference_url: "https://www.ecfr.gov/current/title-46/section-142.230"
+notes: null

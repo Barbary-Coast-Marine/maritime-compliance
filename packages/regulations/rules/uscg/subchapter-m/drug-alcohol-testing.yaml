@@ -1,0 +1,35 @@
+rule_id: USCG-M-140-505-DRUGTEST
+status: draft
+verified_by: null
+verified_date: null
+legal_review: false
+
+citation: "46 CFR 140.505"
+title: "Drug and Alcohol Testing Compliance"
+subchapter: M
+category: certificates
+
+applies_to:
+  vessel_types: [towing]
+  flag_states: [US]
+  gross_tonnage_min: null
+  gross_tonnage_max: null
+
+trigger:
+  type: calendar
+  interval_days: 365
+  warning_days: 30
+  critical_days: 7
+  metric: days_since_drug_alcohol_compliance_review
+  frequency_text: "Random per schedule — compliance reviewed annually"
+
+required_action: >
+  Maintain drug and alcohol testing program in compliance with 46 CFR
+  Part 16. Ensure random testing meets required annual rates. Conduct
+  pre-employment, post-casualty, reasonable cause, and periodic testing
+  as required. Maintain records of all tests and results. MRO review
+  required for all positive results.
+deadline_calc: "Annual review of testing program compliance"
+fine_range_usd: [10000, 50000]
+uscg_reference_url: "https://www.ecfr.gov/current/title-46/section-140.505"
+notes: "Testing rates set annually by USCG. Failure to maintain program can result in COI revocation."

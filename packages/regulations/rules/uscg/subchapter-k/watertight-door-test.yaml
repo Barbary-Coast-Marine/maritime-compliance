@@ -1,0 +1,33 @@
+rule_id: USCG-K-122-410-WTDOOR
+status: draft
+verified_by: null
+verified_date: null
+legal_review: false
+
+citation: "46 CFR 122.410"
+title: "Watertight Door Test"
+subchapter: K
+category: inspections
+
+applies_to:
+  vessel_types: [small_passenger]
+  flag_states: [US]
+  gross_tonnage_min: null
+  gross_tonnage_max: 100
+
+trigger:
+  type: calendar
+  interval_days: 7
+  warning_days: 2
+  critical_days: 0
+  metric: days_since_watertight_door_test
+  frequency_text: "Weekly"
+
+required_action: >
+  Operate each watertight door to verify proper function, including
+  both local and remote operation where applicable. Inspect gaskets,
+  dogs, and closing mechanisms for wear or damage. Record in logbook.
+deadline_calc: "last_watertight_door_test_date + 7 days"
+fine_range_usd: [5000, 25000]
+uscg_reference_url: "https://www.ecfr.gov/current/title-46/section-122.410"
+notes: null

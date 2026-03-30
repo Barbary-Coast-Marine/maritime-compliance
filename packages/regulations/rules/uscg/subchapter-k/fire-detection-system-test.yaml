@@ -1,0 +1,34 @@
+rule_id: USCG-K-122-410-FIREDET
+status: draft
+verified_by: null
+verified_date: null
+legal_review: false
+
+citation: "46 CFR 122.410"
+title: "Fire Detection System Test"
+subchapter: K
+category: inspections
+
+applies_to:
+  vessel_types: [small_passenger]
+  flag_states: [US]
+  gross_tonnage_min: null
+  gross_tonnage_max: 100
+
+trigger:
+  type: calendar
+  interval_days: 7
+  warning_days: 2
+  critical_days: 0
+  metric: days_since_fire_detection_test
+  frequency_text: "Weekly"
+
+required_action: >
+  Test fire detection system including smoke detectors, heat detectors,
+  and fire alarm panel. Activate at least one detector zone per test
+  cycle to verify alarm annunciation at pilothouse. Verify audible
+  and visual alarms function. Record in logbook.
+deadline_calc: "last_fire_detection_test_date + 7 days"
+fine_range_usd: [5000, 25000]
+uscg_reference_url: "https://www.ecfr.gov/current/title-46/section-122.410"
+notes: "All zones must be tested at least once per month on a rotating basis."

@@ -1,0 +1,35 @@
+rule_id: USCG-M-140-420-TRAINING
+status: draft
+verified_by: null
+verified_date: null
+legal_review: false
+
+citation: "46 CFR 140.420"
+title: "Crew Training Records"
+subchapter: M
+category: certificates
+
+applies_to:
+  vessel_types: [towing]
+  flag_states: [US]
+  gross_tonnage_min: null
+  gross_tonnage_max: null
+
+trigger:
+  type: calendar
+  interval_days: 365
+  warning_days: 30
+  critical_days: 7
+  metric: days_since_training_review
+  frequency_text: "Continuous — reviewed annually"
+
+required_action: >
+  Maintain current training records for all crew members. Records must
+  document completion of required training including firefighting, first
+  aid, survival techniques, and vessel-specific familiarization. Verify
+  all crew hold required credentials and endorsements. Records must be
+  available for USCG inspection.
+deadline_calc: "Continuous requirement — annual review of all records"
+fine_range_usd: [5000, 25000]
+uscg_reference_url: "https://www.ecfr.gov/current/title-46/section-140.420"
+notes: "TSMS-enrolled vessels must follow training requirements in approved TSMS."

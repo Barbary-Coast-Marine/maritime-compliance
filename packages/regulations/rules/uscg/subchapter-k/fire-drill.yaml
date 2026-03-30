@@ -1,0 +1,34 @@
+rule_id: USCG-K-122-520-FIRE
+status: draft
+verified_by: null
+verified_date: null
+legal_review: false
+
+citation: "46 CFR 122.520"
+title: "Fire Drill"
+subchapter: K
+category: drills
+
+applies_to:
+  vessel_types: [small_passenger]
+  flag_states: [US]
+  gross_tonnage_min: null
+  gross_tonnage_max: 100
+
+trigger:
+  type: calendar
+  interval_days: 7
+  warning_days: 2
+  critical_days: 0
+  metric: days_since_fire_drill
+  frequency_text: "Weekly when vessel is in operation"
+
+required_action: >
+  Conduct fire drill with all crew. Must include: sounding general alarm,
+  reporting to assigned stations, simulating fire emergency, starting fire
+  pumps, using sufficient hose outlets to verify system working, bringing
+  out breathing apparatus and demonstrating use. Log in vessel logbook.
+deadline_calc: "last_fire_drill_date + 7 days"
+fine_range_usd: [5000, 25000]
+uscg_reference_url: "https://www.ecfr.gov/current/title-46/section-122.520"
+notes: "Required each week vessel operates. If crew changes, drill ASAP after new crew arrives."

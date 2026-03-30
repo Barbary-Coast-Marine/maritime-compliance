@@ -1,0 +1,35 @@
+rule_id: USCG-K-122-410-FIREEXT
+status: draft
+verified_by: null
+verified_date: null
+legal_review: false
+
+citation: "46 CFR 122.410"
+title: "Fire Extinguisher Inspection"
+subchapter: K
+category: inspections
+
+applies_to:
+  vessel_types: [small_passenger]
+  flag_states: [US]
+  gross_tonnage_min: null
+  gross_tonnage_max: 100
+
+trigger:
+  type: calendar
+  interval_days: 30
+  warning_days: 7
+  critical_days: 0
+  metric: days_since_fire_extinguisher_inspection
+  frequency_text: "Monthly portable, annual fixed systems"
+
+required_action: >
+  Monthly: Inspect each portable fire extinguisher for proper location,
+  charge level, accessibility, and physical condition. Annual: Perform
+  full inspection and testing of fixed fire-extinguishing systems per
+  manufacturer specifications. Keep records with dates, unit IDs, and
+  inspector name. Records must be available to marine inspector on request.
+deadline_calc: "last_fire_extinguisher_inspection_date + 30 days"
+fine_range_usd: [5000, 25000]
+uscg_reference_url: "https://www.ecfr.gov/current/title-46/section-122.410"
+notes: "Annual fixed system inspection is a separate sub-requirement tracked at 365-day intervals."

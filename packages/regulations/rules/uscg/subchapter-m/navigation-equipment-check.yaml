@@ -1,0 +1,34 @@
+rule_id: USCG-M-142-320-NAV
+status: draft
+verified_by: null
+verified_date: null
+legal_review: false
+
+citation: "46 CFR 142.320"
+title: "Navigation Equipment Check"
+subchapter: M
+category: pre_departure
+
+applies_to:
+  vessel_types: [towing]
+  flag_states: [US]
+  gross_tonnage_min: null
+  gross_tonnage_max: null
+
+trigger:
+  type: event
+  interval_days: null
+  warning_days: null
+  critical_days: null
+  metric: pre_departure
+  frequency_text: "Before every departure"
+
+required_action: >
+  Verify all navigation equipment is operational before departure.
+  Check radar, GPS, compass, depth sounder, AIS, navigation lights,
+  sound signals, and communication equipment. Ensure current charts
+  and publications are aboard. Record in logbook.
+deadline_calc: "Before vessel departs"
+fine_range_usd: [5000, 25000]
+uscg_reference_url: "https://www.ecfr.gov/current/title-46/section-142.320"
+notes: null

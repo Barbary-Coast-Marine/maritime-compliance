@@ -1,0 +1,34 @@
+rule_id: USCG-M-144-100-STAB
+status: draft
+verified_by: null
+verified_date: null
+legal_review: false
+
+citation: "46 CFR 144.100"
+title: "Stability Verification"
+subchapter: M
+category: pre_departure
+
+applies_to:
+  vessel_types: [towing]
+  flag_states: [US]
+  gross_tonnage_min: null
+  gross_tonnage_max: null
+
+trigger:
+  type: event
+  interval_days: null
+  warning_days: null
+  critical_days: null
+  metric: pre_departure
+  frequency_text: "Before departure when loading changes"
+
+required_action: >
+  When loading conditions change, verify vessel stability complies with
+  stability requirements and any applicable stability letter or instructions.
+  Check draft marks, assess free surface effects, and ensure vessel is
+  within approved operating limits before departure.
+deadline_calc: "Before vessel departs when loading has changed"
+fine_range_usd: [10000, 50000]
+uscg_reference_url: "https://www.ecfr.gov/current/title-46/section-144.100"
+notes: "Particularly important when taking on fuel, water, or deck cargo."

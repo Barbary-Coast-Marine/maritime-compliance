@@ -1,0 +1,35 @@
+rule_id: USCG-M-142-245-MOB
+status: draft
+verified_by: null
+verified_date: null
+legal_review: false
+
+citation: "46 CFR 142.245"
+title: "Man Overboard Drill"
+subchapter: M
+category: drills
+
+applies_to:
+  vessel_types: [towing]
+  flag_states: [US]
+  gross_tonnage_min: null
+  gross_tonnage_max: null
+
+trigger:
+  type: calendar
+  interval_days: 30
+  warning_days: 7
+  critical_days: 0
+  metric: days_since_mob_drill
+  frequency_text: "Monthly minimum"
+
+required_action: >
+  Conduct man-overboard drill. Must include: sounding MOB alarm,
+  maneuvering vessel for recovery, deploying rescue equipment (life ring,
+  rescue boat if applicable), practicing recovery techniques. Crew must
+  demonstrate knowledge of Williamson turn or equivalent maneuver.
+  Log in vessel logbook.
+deadline_calc: "last_mob_drill_date + 30 days"
+fine_range_usd: [5000, 25000]
+uscg_reference_url: "https://www.ecfr.gov/current/title-46/section-142.245"
+notes: "Critical for towing vessels due to high risk of crew falling overboard during line handling."

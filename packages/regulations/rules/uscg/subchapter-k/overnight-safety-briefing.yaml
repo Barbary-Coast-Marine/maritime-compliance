@@ -1,0 +1,35 @@
+rule_id: USCG-K-122-510-OVERNIGHT
+status: draft
+verified_by: null
+verified_date: null
+legal_review: false
+
+citation: "46 CFR 122.510"
+title: "Overnight Passenger Safety Briefing"
+subchapter: K
+category: drills
+
+applies_to:
+  vessel_types: [small_passenger]
+  flag_states: [US]
+  gross_tonnage_min: null
+  gross_tonnage_max: 100
+
+trigger:
+  type: event
+  interval_days: null
+  warning_days: null
+  critical_days: null
+  metric: pre_departure
+  frequency_text: "Before every overnight voyage"
+
+required_action: >
+  Before an overnight voyage, conduct a safety briefing for all passengers.
+  Must include: location and use of lifejackets, location of survival craft,
+  emergency exits and escape routes, procedures for fire and abandon-ship
+  emergencies, location of fire extinguishers and alarms, and general
+  alarm signal. Briefing may be in person or via recorded announcement.
+deadline_calc: "Before vessel departs on any overnight voyage"
+fine_range_usd: [5000, 25000]
+uscg_reference_url: "https://www.ecfr.gov/current/title-46/section-122.510"
+notes: "Specific to vessels with overnight accommodations under Subchapter K."

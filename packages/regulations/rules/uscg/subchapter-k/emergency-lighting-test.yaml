@@ -1,0 +1,34 @@
+rule_id: USCG-K-122-410-EMLIGHT
+status: draft
+verified_by: null
+verified_date: null
+legal_review: false
+
+citation: "46 CFR 122.410"
+title: "Emergency Lighting and Power Test"
+subchapter: K
+category: inspections
+
+applies_to:
+  vessel_types: [small_passenger]
+  flag_states: [US]
+  gross_tonnage_min: null
+  gross_tonnage_max: 100
+
+trigger:
+  type: calendar
+  interval_days: 7
+  warning_days: 2
+  critical_days: 0
+  metric: days_since_emergency_lighting_test
+  frequency_text: "Weekly"
+
+required_action: >
+  Test emergency lighting and power systems to verify they activate
+  properly on loss of main power. Emergency generators must run under
+  load for at least 2 hours monthly. Storage batteries tested every
+  6 months. Record in logbook.
+deadline_calc: "last_emergency_lighting_test_date + 7 days"
+fine_range_usd: [2000, 15000]
+uscg_reference_url: "https://www.ecfr.gov/current/title-46/section-122.410"
+notes: "Monthly 2-hour generator load test is a separate sub-requirement."

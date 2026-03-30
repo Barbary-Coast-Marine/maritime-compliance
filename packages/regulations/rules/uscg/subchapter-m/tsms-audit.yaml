@@ -1,0 +1,35 @@
+rule_id: USCG-M-138-400-TSMS
+status: draft
+verified_by: null
+verified_date: null
+legal_review: false
+
+citation: "46 CFR 138.400"
+title: "Towing Safety Management System (TSMS) External Audit"
+subchapter: M
+category: certificates
+
+applies_to:
+  vessel_types: [towing]
+  flag_states: [US]
+  gross_tonnage_min: null
+  gross_tonnage_max: null
+
+trigger:
+  type: calendar
+  interval_days: 365
+  warning_days: 60
+  critical_days: 14
+  metric: days_since_tsms_audit
+  frequency_text: "Annual external audit"
+
+required_action: >
+  Undergo external audit of Towing Safety Management System by an
+  approved third-party organization (TPO). Audit must verify compliance
+  with all TSMS elements including management policies, vessel operations,
+  maintenance, training, and emergency procedures. Corrective actions
+  for nonconformities must be completed within specified timeframes.
+deadline_calc: "last_tsms_audit_date + 365 days"
+fine_range_usd: [10000, 50000]
+uscg_reference_url: "https://www.ecfr.gov/current/title-46/section-138.400"
+notes: "Required for vessels using TSMS option for Subchapter M compliance."

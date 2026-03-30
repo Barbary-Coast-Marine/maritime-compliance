@@ -1,0 +1,34 @@
+rule_id: USCG-M-136-200
+status: draft
+verified_by: null
+verified_date: null
+legal_review: false
+
+citation: "46 CFR 136.200"
+title: "Certificate of Inspection Validity"
+subchapter: M
+category: certificates
+
+applies_to:
+  vessel_types: [towing]
+  flag_states: [US]
+  gross_tonnage_min: null
+  gross_tonnage_max: null
+
+trigger:
+  type: calendar
+  interval_days: 1825
+  warning_days: 180
+  critical_days: 60
+  metric: days_until_coi_expiry
+  frequency_text: "Every 5 years"
+
+required_action: >
+  Apply for COI renewal. Vessel must pass full inspection including
+  hull, machinery, electrical, lifesaving, and fire protection systems.
+  Cannot operate without valid COI. Towing vessels may use TSMS option
+  per Subchapter M for COI compliance.
+deadline_calc: "coi_expiry_date"
+fine_range_usd: [10000, 100000]
+uscg_reference_url: "https://www.ecfr.gov/current/title-46/section-136.200"
+notes: "COI is valid for 5 years. Annual or mid-period inspections may be required."
