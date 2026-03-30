@@ -1,12 +1,13 @@
 import { FastifyInstance } from "fastify";
 import { desc, eq } from "drizzle-orm";
-import { vessels, logbookEntries, complianceRules, type Database } from "@maritime/db";
+import { vessels, logbookEntries, complianceRules, users, type Database } from "@maritime/db";
 import { loadRules } from "@maritime/regulations";
 import {
   evaluateCompliance,
   getOverallStatus,
   getComplianceSummary,
 } from "../rule-engine.js";
+import { authPreHandler } from "../middleware/auth.js";
 import type { VesselComplianceState } from "../rule-engine.js";
 import * as path from "path";
 import { fileURLToPath } from "url";
@@ -160,11 +161,18 @@ export async function complianceRoutes(app: FastifyInstance) {
    * Log that a compliance item was completed (drill, inspection, etc.)
    */
   app.post<{
-    Body: { rule_id: string; completed_by: string; notes?: string };
-  }>("/compliance/log-completion", async (request, reply) => {
-    const { rule_id, completed_by, notes } = request.body;
+    Body: { rule_id: string; completed_by?: string; notes?: string };
+  }>("/compliance/log-completion", { preHandler: authPreHandler }, async (request, reply) => {
+    const { rule_id, notes } = request.body;
 
     try {
+      // Resolve author from JWT
+      const jwtUser = request.user!;
+      let author = jwtUser.username;
+      const [dbUser] = await db.select({ displayName: users.displayName })
+        .from(users).where(eq(users.id, jwtUser.id)).limit(1);
+      if (dbUser?.displayName) author = dbUser.displayName;
+
       // Get vessel
       const [vessel] = await db.select({ id: vessels.id }).from(vessels).limit(1);
       if (!vessel) {
@@ -188,15 +196,15 @@ export async function complianceRoutes(app: FastifyInstance) {
           vesselId: vessel.id,
           entryType: entryType as any,
           title: rule?.title ?? rule_id,
-          body: notes ?? `Compliance item ${rule_id} completed by ${completed_by}`,
-          author: completed_by,
+          body: notes ?? `Compliance item ${rule_id} completed.`,
+          author,
         })
         .returning();
 
       return {
         success: true,
         rule_id,
-        completed_by,
+        completed_by: author,
         entry_id: entry.id,
         completed_at: entry.timestamp.toISOString(),
       };

@@ -1,6 +1,7 @@
 import { FastifyInstance } from "fastify";
 import { eq, desc, sql, count } from "drizzle-orm";
-import { logbookEntries, vessels, type Database } from "@maritime/db";
+import { logbookEntries, vessels, users, type Database } from "@maritime/db";
+import { authPreHandler } from "../middleware/auth.js";
 
 export async function logbookRoutes(app: FastifyInstance) {
   const db = (app as any).db as Database;
@@ -49,10 +50,17 @@ export async function logbookRoutes(app: FastifyInstance) {
       entry_type: "drill" | "inspection" | "fuel_dip" | "maintenance" | "general";
       title: string;
       body: string;
-      author: string;
+      author?: string; // ignored — always pulled from JWT
     };
-  }>("/logbook", async (request, reply) => {
-    const { entry_type, title, body, author } = request.body;
+  }>("/logbook", { preHandler: authPreHandler }, async (request, reply) => {
+    const { entry_type, title, body } = request.body;
+
+    // Resolve author from JWT — look up display name from DB
+    const jwtUser = request.user!;
+    let author = jwtUser.username;
+    const [dbUser] = await db.select({ displayName: users.displayName, username: users.username })
+      .from(users).where(eq(users.id, jwtUser.id)).limit(1);
+    if (dbUser?.displayName) author = dbUser.displayName;
 
     // Get vessel ID
     const [vessel] = await db.select({ id: vessels.id }).from(vessels).limit(1);

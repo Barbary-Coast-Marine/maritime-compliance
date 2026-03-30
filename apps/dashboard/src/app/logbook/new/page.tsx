@@ -230,7 +230,12 @@ export default function NewLogbookEntryPage() {
           )}
 
           {/* Author */}
-          <Field label="Author" value={author} onChange={setAuthor} placeholder="e.g., Capt. Cevan Lesieur" />
+          <div>
+            <label className="text-sm text-slate-muted block mb-1">Author</label>
+            <div className="w-full bg-navy border border-navy-border/50 rounded-lg px-4 py-3 text-sm text-slate-muted min-h-[48px] flex items-center">
+              {author || "—"}
+            </div>
+          </div>
         </section>
       )}
 
