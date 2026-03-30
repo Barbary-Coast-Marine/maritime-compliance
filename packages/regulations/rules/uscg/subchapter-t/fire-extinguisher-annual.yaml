@@ -1,0 +1,34 @@
+rule_id: USCG-T-185-604
+status: draft
+verified_by: null
+verified_date: null
+legal_review: false
+
+citation: "46 CFR 185.604"
+title: "Fire Extinguisher Annual Inspection"
+subchapter: T
+category: inspections
+
+applies_to:
+  vessel_types: [small_passenger]
+  flag_states: [US]
+  gross_tonnage_min: null
+  gross_tonnage_max: 100
+
+trigger:
+  type: calendar
+  interval_days: 365
+  warning_days: 30
+  critical_days: 7
+  metric: days_since_fire_extinguisher_inspection
+  frequency_text: "Annual"
+
+required_action: >
+  Perform tests and inspections of each portable and semiportable fire
+  extinguisher and fixed fire-extinguishing system per Table 185.604.
+  Keep records with dates, unit IDs, and inspector name. Records must
+  be available to marine inspector on request.
+deadline_calc: "last_fire_extinguisher_inspection_date + 365 days"
+fine_range_usd: [5000, 25000]
+uscg_reference_url: "https://www.ecfr.gov/current/title-46/section-185.604"
+notes: null

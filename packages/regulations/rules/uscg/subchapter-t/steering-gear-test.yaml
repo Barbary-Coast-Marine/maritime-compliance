@@ -1,0 +1,34 @@
+rule_id: USCG-T-185-516
+status: draft
+verified_by: null
+verified_date: null
+legal_review: false
+
+citation: "46 CFR 185.516"
+title: "Steering Gear, Whistle, and Communication Test"
+subchapter: T
+category: pre_departure
+
+applies_to:
+  vessel_types: [small_passenger]
+  flag_states: [US]
+  gross_tonnage_min: null
+  gross_tonnage_max: 100
+
+trigger:
+  type: event
+  interval_days: null
+  warning_days: null
+  critical_days: null
+  metric: pre_departure
+  frequency_text: "Before every departure (or weekly for vessels not away >48h)"
+
+required_action: >
+  Test steering gear, whistle, and means of communication between
+  pilothouse and engine room. For vessels away from shore >48h,
+  test 12 hours before departure. All others test at least weekly.
+  Record in vessel logbook.
+deadline_calc: "Before each departure or weekly"
+fine_range_usd: [2000, 10000]
+uscg_reference_url: "https://www.ecfr.gov/current/title-46/section-185.516"
+notes: null

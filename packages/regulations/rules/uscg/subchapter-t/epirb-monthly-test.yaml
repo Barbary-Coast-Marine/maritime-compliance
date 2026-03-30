@@ -1,0 +1,32 @@
+rule_id: USCG-T-185-512-EPIRB
+status: draft
+verified_by: null
+verified_date: null
+legal_review: false
+
+citation: "46 CFR 185.512"
+title: "EPIRB Monthly Test"
+subchapter: T
+category: inspections
+
+applies_to:
+  vessel_types: [small_passenger]
+  flag_states: [US]
+  gross_tonnage_min: null
+  gross_tonnage_max: 100
+
+trigger:
+  type: calendar
+  interval_days: 30
+  warning_days: 7
+  critical_days: 0
+  metric: days_since_epirb_test
+  frequency_text: "Monthly"
+
+required_action: >
+  Test each EPIRB and SART using integrated test circuit and output
+  indicator (test button) to verify operational. Record in logbook.
+deadline_calc: "last_epirb_test_date + 30 days"
+fine_range_usd: [2000, 15000]
+uscg_reference_url: "https://www.ecfr.gov/current/title-46/section-185.512"
+notes: "Do not test using the 406 MHz distress frequency — use test mode only."

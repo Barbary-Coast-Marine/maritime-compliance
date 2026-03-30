@@ -1,0 +1,33 @@
+rule_id: USCG-T-185-506
+status: draft
+verified_by: null
+verified_date: null
+legal_review: false
+
+citation: "46 CFR 185.506"
+title: "Stability Verification Before Departure"
+subchapter: T
+category: pre_departure
+
+applies_to:
+  vessel_types: [small_passenger]
+  flag_states: [US]
+  gross_tonnage_min: null
+  gross_tonnage_max: 100
+
+trigger:
+  type: event
+  interval_days: null
+  warning_days: null
+  critical_days: null
+  metric: pre_departure
+  frequency_text: "Before every departure"
+
+required_action: >
+  After loading but before departure, verify vessel complies with
+  stability requirements in trim-and-stability book, stability letter,
+  and Certificate of Inspection. Vessel may not depart until in compliance.
+deadline_calc: "Before vessel departs on any voyage"
+fine_range_usd: [10000, 50000]
+uscg_reference_url: "https://www.ecfr.gov/current/title-46/section-185.506"
+notes: null

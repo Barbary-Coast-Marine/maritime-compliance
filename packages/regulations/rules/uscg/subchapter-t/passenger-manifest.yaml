@@ -1,0 +1,34 @@
+rule_id: USCG-T-185-502
+status: draft
+verified_by: null
+verified_date: null
+legal_review: false
+
+citation: "46 CFR 185.502"
+title: "Passenger Count and Manifest"
+subchapter: T
+category: pre_departure
+
+applies_to:
+  vessel_types: [small_passenger]
+  flag_states: [US]
+  gross_tonnage_min: null
+  gross_tonnage_max: 100
+
+trigger:
+  type: event
+  interval_days: null
+  warning_days: null
+  critical_days: null
+  metric: pre_departure
+  frequency_text: "Before every departure"
+
+required_action: >
+  Before departure, the master shall ensure an accurate count of all
+  persons aboard. For voyages >24 hours or open water, a complete list
+  of names must be prepared and left ashore. Never exceed the number
+  of persons permitted by the COI.
+deadline_calc: "Before vessel departs on any voyage"
+fine_range_usd: [5000, 25000]
+uscg_reference_url: "https://www.ecfr.gov/current/title-46/section-185.502"
+notes: "USCG requires full name of every passenger for vessels on longer voyages."

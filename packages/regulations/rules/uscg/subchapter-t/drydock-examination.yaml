@@ -1,0 +1,34 @@
+rule_id: USCG-T-176-600
+status: draft
+verified_by: null
+verified_date: null
+legal_review: false
+
+citation: "46 CFR 176.600"
+title: "Drydock and Internal Structural Examination"
+subchapter: T
+category: certificates
+
+applies_to:
+  vessel_types: [small_passenger]
+  flag_states: [US]
+  gross_tonnage_min: null
+  gross_tonnage_max: 100
+
+trigger:
+  type: calendar
+  interval_days: 730
+  warning_days: 90
+  critical_days: 14
+  metric: days_since_drydock
+  frequency_text: "Every 2 years (or per COI)"
+
+required_action: >
+  Vessel must undergo drydock examination and internal structural
+  examination. Schedule with USCG-approved facility. UWILD per
+  176.615 may be available. Alternative Hull Examination program
+  available per 176.620-176.660 for eligible vessels.
+deadline_calc: "last_drydock_date + 730 days (2 years standard)"
+fine_range_usd: [10000, 50000]
+uscg_reference_url: "https://www.ecfr.gov/current/title-46/section-176.600"
+notes: "Interval may be 1, 2, or 5 years depending on vessel construction and OCMI determination. Check COI."

@@ -1,0 +1,33 @@
+rule_id: USCG-T-185-522
+status: draft
+verified_by: null
+verified_date: null
+legal_review: false
+
+citation: "46 CFR 185.522"
+title: "Periodic Sanitary Inspection"
+subchapter: T
+category: inspections
+
+applies_to:
+  vessel_types: [small_passenger]
+  flag_states: [US]
+  gross_tonnage_min: null
+  gross_tonnage_max: 100
+
+trigger:
+  type: calendar
+  interval_days: 30
+  warning_days: 7
+  critical_days: 0
+  metric: days_since_sanitary_inspection
+  frequency_text: "Monthly (or as determined by master)"
+
+required_action: >
+  Master shall make periodic inspections of quarters, toilet and
+  washing spaces, serving pantries, galleys, and similar spaces to
+  ensure maintained in sanitary condition. Record results in logbook.
+deadline_calc: "last_sanitary_inspection_date + 30 days"
+fine_range_usd: [1000, 5000]
+uscg_reference_url: "https://www.ecfr.gov/current/title-46/section-185.522"
+notes: null

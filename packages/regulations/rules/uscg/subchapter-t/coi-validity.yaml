@@ -1,0 +1,34 @@
+rule_id: USCG-T-176-107
+status: draft
+verified_by: null
+verified_date: null
+legal_review: false
+
+citation: "46 CFR 176.107"
+title: "Certificate of Inspection Validity"
+subchapter: T
+category: certificates
+
+applies_to:
+  vessel_types: [small_passenger]
+  flag_states: [US]
+  gross_tonnage_min: null
+  gross_tonnage_max: 100
+
+trigger:
+  type: calendar
+  interval_days: 1825
+  warning_days: 180
+  critical_days: 60
+  metric: days_until_coi_expiry
+  frequency_text: "Every 5 years"
+
+required_action: >
+  Apply for COI renewal. Vessel must pass full inspection including
+  hull, machinery, electrical, lifesaving, fire protection, and
+  stability. Cannot carry passengers with expired COI. Operating
+  without valid COI is a criminal offense under 46 USC 3318.
+deadline_calc: "coi_expiry_date"
+fine_range_usd: [10000, 100000]
+uscg_reference_url: "https://www.ecfr.gov/current/title-46/section-176.107"
+notes: "COI is valid for 5 years. Annual reinspection required per 176.500."
