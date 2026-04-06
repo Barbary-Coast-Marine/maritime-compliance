@@ -17,11 +17,51 @@
 
 ## Hardware Target
 
-- Intel NUC or fanless industrial PC (i3/i5, 16GB RAM, 256GB SSD)
-- Ubuntu Server 24.04 LTS
-- ~$300-600 hardware cost per vessel
-- Serial/USB for sensor inputs (NMEA 0183/2000, Modbus)
+### Pilot 1 — SS Jeremiah O'Brien (Phase 0 + demo)
+- **NVIDIA Jetson Orin Nano (8GB)** — ~$500
+  - 1024 CUDA cores — Ollama runs accelerated (~20-30 tok/s)
+  - Full stack including LLM — good for demos, grant credibility, TRL advancement
+  - Power: ship's 120V AC (O'Brien has no power constraints)
+  - Ubuntu 22.04 arm64 (JetPack), Docker Compose
+- First sea trial: May 30, 2026 (Memorial Day Cruise)
+
+### Pilot 2 — Sailboat / Tourist Charter Power Catamaran (12V prototype)
+- **Fanless Intel N100 mini PC** — ~$180-220
+  - 16GB RAM, 256GB M.2 NVMe SSD
+  - Intel N100 (4 cores, 6W TDP idle, ~15W peak under Ollama)
+  - **Wide-voltage 12V DC input** (9-30V or 9-36V range — handles marine 12V charging swings)
+  - Fanless — no moving parts; tolerates salt air and vibration
+  - Recommended units: Topton N100 fanless industrial, Seeed Studio reTerminal DM
+- Ubuntu Server 24.04 LTS (x86_64)
+- Serial/USB for sensor inputs (NMEA 0183/2000, Modbus) — Phase 2
 - Ethernet to ship LAN; WiFi for port sync
+- Target vessel types: sailing vessels, tourist charter catamarans, small passenger vessels <100 GT
+
+### Product Appliance (Commercial — Phase 1+)
+- Same N100 spec as Pilot 2, packaged as a hardened appliance
+- See packaging + power budget below
+
+### Power Budget (12V Vessel System — N100)
+| State | Draw | Current @12V |
+|-------|------|--------------|
+| Idle (full stack, no LLM) | ~6-8W | ~0.5-0.7A |
+| Ollama active (query) | ~15W peak | ~1.25A |
+| 24h average | ~4-6 Ah/day | trivial on any house bank |
+
+Note: Jetson Orin Nano draws 10-25W depending on load — viable on 12V but higher Ah budget needed. Not target for 12V product.
+
+### Appliance Packaging (Production)
+- Weatherproof enclosure (Pelican-style or aluminum DIN rail box)
+- Conformal-coated PCB for humidity resistance
+- Screw-terminal 12V input (more reliable than barrel jack aboard)
+- External status LED (crew visibility without logging in)
+- Hardware or software watchdog for auto-reboot offshore
+- DIN rail mount option for engine room installs
+
+### COGS Target
+- Hardware: <$250/vessel
+- Enclosure + accessories: ~$50
+- **Total BOM: ~$300/vessel**
 
 ---
 
