@@ -36,7 +36,14 @@ async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
     ...init,
     headers,
   });
-  if (!res.ok) throw new Error(`API ${res.status}: ${res.statusText}`);
+  // Handle 401 proactively
+  if (res.status === 401) {
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("maritime_token");
+      window.location.href = '/login';
+    }
+    throw new Error("Unauthorized");
+  }
   return res.json() as Promise<T>;
 }
 

@@ -43,7 +43,7 @@ export async function authRoutes(app: FastifyInstance) {
       vesselId: user.vesselId,
     };
 
-    const token = jwt.sign(payload, getAuthSecret(), { expiresIn: "24h" });
+    const token = jwt.sign(payload, getAuthSecret(), { expiresIn: "7d" });
 
     return {
       token,

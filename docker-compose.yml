@@ -1,0 +1,68 @@
+version: '3.8'
+
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_USER:-marinedb}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: maritime_compliance
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - internal
+
+  vessel-agent:
+    build: 
+      context: .
+      dockerfile: apps/vessel-agent/Dockerfile
+    restart: always
+    environment:
+      DATABASE_URL: postgresql://${DB_USER:-marinedb}:${DB_PASSWORD}@db:5432/maritime_compliance
+      AUTH_SECRET: ${AUTH_SECRET}
+    depends_on:
+      - db
+    networks:
+      - internal
+
+  dashboard:
+    build:
+      context: .
+      dockerfile: apps/dashboard/Dockerfile
+    restart: always
+    environment:
+      NEXT_PUBLIC_API_URL: http://vessel-agent:3200
+    depends_on:
+      - vessel-agent
+    networks:
+      - internal
+
+  nginx:
+    image: nginx:alpine
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - ./install/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - dashboard
+      - vessel-agent
+    networks:
+      - internal
+
+  mdns:
+    image: avahi/avahi-daemon:latest
+    restart: always
+    network_mode: host
+    cap_add:
+      - NET_ADMIN
+    volumes:
+      - ./install/avahi.service:/etc/avahi/services/maritime.service:ro
+
+networks:
+  internal:
+    driver: bridge
+
+volumes:
+  pgdata:
