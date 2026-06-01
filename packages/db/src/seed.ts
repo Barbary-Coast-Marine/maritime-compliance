@@ -6,12 +6,12 @@ const db = createDb();
 async function seed() {
   console.log("Seeding database...");
 
-  // Clear existing data (FK-safe order)
-  await db.delete(crewCredentials);
-  await db.delete(crewProfiles);
-  await db.delete(logbookEntries);
-  await db.delete(users);
-  await db.delete(vessels);
+  // Skip if already seeded (idempotent — safe to run on every startup)
+  const existing = await db.select({ id: vessels.id }).from(vessels).limit(1);
+  if (existing.length > 0) {
+    console.log("Database already seeded, skipping.");
+    process.exit(0);
+  }
 
   // Insert SS Jeremiah O'Brien
   const [vessel] = await db

@@ -1,9 +1,9 @@
 import { FastifyInstance } from "fastify";
-import { vessels, complianceRules, crewProfiles, crewCredentials, type Database } from "@maritime/db";
+import { vessels, complianceRules, crewProfiles, crewCredentials, complianceEvents, type Database } from "@maritime/db";
 import { loadRules } from "@maritime/regulations";
-import { evaluateCompliance } from "../rule-engine.js";
+import { evaluateCompliance, buildLastCompleted } from "../rule-engine.js";
 import type { VesselComplianceState } from "../rule-engine.js";
-import { desc, eq } from "drizzle-orm";
+import { desc, eq, gt, and } from "drizzle-orm";
 import { logbookEntries } from "@maritime/db";
 import * as path from "path";
 import { fileURLToPath } from "url";
@@ -30,33 +30,13 @@ export async function alertRoutes(app: FastifyInstance) {
         return { alerts: [], count: 0 };
       }
 
-      // Build last_completed from logbook (same logic as compliance route)
       const recentEntries = await db
         .select()
         .from(logbookEntries)
         .orderBy(desc(logbookEntries.timestamp))
         .limit(100);
 
-      const last_completed: Record<string, Date> = {};
-      const mappings: [string, string[]][] = [
-        ["days_since_fire_drill", ["fire drill"]],
-        ["days_since_abandon_ship_drill", ["abandon ship"]],
-        ["days_since_lifesaving_weekly_inspection", ["lifesaving", "weekly"]],
-        ["days_since_lifesaving_monthly_inspection", ["lifesaving", "monthly"]],
-        ["days_since_steering_gear_test", ["steering gear"]],
-        ["days_since_boiler_inspection", ["boiler"]],
-      ];
-
-      for (const entry of recentEntries) {
-        const titleLower = entry.title.toLowerCase();
-        for (const [metric, keywords] of mappings) {
-          if (keywords.every((kw) => titleLower.includes(kw))) {
-            if (!last_completed[metric]) {
-              last_completed[metric] = entry.timestamp;
-            }
-          }
-        }
-      }
+      const last_completed = buildLastCompleted(recentEntries);
 
       const state: VesselComplianceState = {
         last_completed,
@@ -82,6 +62,19 @@ export async function alertRoutes(app: FastifyInstance) {
 
       const evaluations = evaluateCompliance(activeRules, state);
 
+      // Load acknowledged rule IDs (acknowledged within last 8 hours)
+      const eightHoursAgo = new Date(Date.now() - 8 * 60 * 60 * 1000);
+      const acknowledgedEvents = await db
+        .select({ ruleCode: complianceEvents.ruleCode })
+        .from(complianceEvents)
+        .where(
+          and(
+            eq(complianceEvents.vesselId, vessel.id),
+            gt(complianceEvents.acknowledgedAt, eightHoursAgo)
+          )
+        );
+      const acknowledgedRules = new Set(acknowledgedEvents.map((e) => e.ruleCode));
+
       // Generate short plain-English description based on alert context
       function shortDescription(verdict: string, daysRemaining: number | null, nextDue: Date | string | null): string {
         if (verdict === "violation") {
@@ -96,7 +89,7 @@ export async function alertRoutes(app: FastifyInstance) {
         return "Action required.";
       }
 
-      // Alerts = warnings + violations
+      // Alerts = warnings + violations (excluding recently acknowledged)
       const alerts: Array<{
         rule_id: string;
         title: string;
@@ -108,7 +101,7 @@ export async function alertRoutes(app: FastifyInstance) {
         description: string;
         detail: string;
       }> = evaluations
-        .filter((e) => e.verdict === "warning" || e.verdict === "violation")
+        .filter((e) => (e.verdict === "warning" || e.verdict === "violation") && !acknowledgedRules.has(e.rule_id))
         .map((e) => ({
           rule_id: e.rule_id,
           title: e.title,
@@ -159,11 +152,11 @@ export async function alertRoutes(app: FastifyInstance) {
             rule_id: `CREW-CRED-${cred.id}`,
             title: `Expiring Credential: ${crewName} \u2014 ${cred.title} (${daysRemaining} days)`,
             citation: "",
-            severity: "violation",
+            severity: "warning",
             days_remaining: daysRemaining,
             next_due: cred.expiryDate,
             last_completed: null,
-            description: `Expires ${expiryStr}. Renew immediately.`,
+            description: `Expires ${expiryStr}. Renew soon.`,
             detail: `Renew ${cred.title} for ${crewName} within ${daysRemaining} days`,
           });
         } else if (daysRemaining <= 90) {
@@ -191,37 +184,64 @@ export async function alertRoutes(app: FastifyInstance) {
 
   /**
    * POST /api/alerts/:id/acknowledge
-   * Acknowledge an alert (placeholder)
+   * Acknowledge an alert — suppresses it for 8 hours
    */
   app.post<{
     Params: { id: string };
     Body: { acknowledged_by: string };
-  }>("/alerts/:id/acknowledge", async (request, _reply) => {
+  }>("/alerts/:id/acknowledge", async (request, reply) => {
     const { id } = request.params;
     const { acknowledged_by } = request.body;
-    return {
-      success: true,
-      alert_id: id,
-      acknowledged_by,
-      acknowledged_at: new Date().toISOString(),
-    };
+
+    try {
+      const [vessel] = await db.select({ id: vessels.id }).from(vessels).limit(1);
+      if (!vessel) return reply.status(400).send({ error: "No vessel configured" });
+
+      const now = new Date();
+      await db.insert(complianceEvents).values({
+        vesselId: vessel.id,
+        ruleCode: id,
+        verdict: "info",
+        description: `Acknowledged by ${acknowledged_by}`,
+        acknowledgedAt: now,
+      });
+
+      return { success: true, alert_id: id, acknowledged_by, acknowledged_at: now.toISOString() };
+    } catch (err) {
+      app.log.error(err, "Failed to acknowledge alert");
+      return reply.status(500).send({ error: "Failed to acknowledge alert" });
+    }
   });
 
   /**
    * POST /api/alerts/:id/resolve
-   * Mark an alert as resolved (placeholder)
+   * Mark an alert as resolved — suppresses it for 8 hours
    */
   app.post<{
     Params: { id: string };
     Body: { resolved_by: string; action_taken: string };
-  }>("/alerts/:id/resolve", async (request, _reply) => {
+  }>("/alerts/:id/resolve", async (request, reply) => {
     const { id } = request.params;
-    const { resolved_by } = request.body;
-    return {
-      success: true,
-      alert_id: id,
-      resolved_by,
-      resolved_at: new Date().toISOString(),
-    };
+    const { resolved_by, action_taken } = request.body;
+
+    try {
+      const [vessel] = await db.select({ id: vessels.id }).from(vessels).limit(1);
+      if (!vessel) return reply.status(400).send({ error: "No vessel configured" });
+
+      const now = new Date();
+      await db.insert(complianceEvents).values({
+        vesselId: vessel.id,
+        ruleCode: id,
+        verdict: "info",
+        description: `Resolved by ${resolved_by}: ${action_taken}`,
+        acknowledgedAt: now,
+        resolvedAt: now,
+      });
+
+      return { success: true, alert_id: id, resolved_by, resolved_at: now.toISOString() };
+    } catch (err) {
+      app.log.error(err, "Failed to resolve alert");
+      return reply.status(500).send({ error: "Failed to resolve alert" });
+    }
   });
 }

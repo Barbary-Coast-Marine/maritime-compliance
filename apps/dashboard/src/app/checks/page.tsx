@@ -47,6 +47,7 @@ export default function ChecksPage() {
   const [logNotes, setLogNotes] = useState("");
   const [logSaving, setLogSaving] = useState(false);
   const [logFlash, setLogFlash] = useState<string | null>(null);
+  const [logError, setLogError] = useState<string | null>(null);
 
   useEffect(() => {
     fetchComplianceStatus().then((data) => {
@@ -69,16 +70,19 @@ export default function ChecksPage() {
 
   const handleConfirmLog = async (item: ComplianceCheck) => {
     setLogSaving(true);
+    setLogError(null);
+    // Optimistic update
+    setChecks((prev) => prev.map((c) => c.id === item.id ? { ...c, status: "passing" as const } : c));
+    closeLogForm();
     try {
       await logComplianceCompletion(item.id, logAuthor, logNotes || undefined);
-      setChecks((prev) =>
-        prev.map((c) => (c.id === item.id ? { ...c, status: "passing" as const } : c))
-      );
       setLogFlash(item.id);
       setTimeout(() => setLogFlash(null), 2000);
-      closeLogForm();
     } catch {
-      // keep form open on error
+      // Rollback optimistic update on failure
+      setChecks((prev) => prev.map((c) => c.id === item.id ? { ...c, status: item.status } : c));
+      setLogFormId(item.id);
+      setLogError("Failed to save — check connection and try again.");
     } finally {
       setLogSaving(false);
     }
@@ -166,6 +170,9 @@ export default function ChecksPage() {
                           className="w-full bg-navy border border-navy-border rounded-lg px-3 py-2 text-sm text-slate-text focus:outline-none focus:border-status-blue"
                         />
                       </div>
+                      {logError && logFormId === item.id && (
+                        <p className="text-xs text-status-red">{logError}</p>
+                      )}
                       <div className="flex gap-2">
                         <button
                           onClick={() => handleConfirmLog(item)}

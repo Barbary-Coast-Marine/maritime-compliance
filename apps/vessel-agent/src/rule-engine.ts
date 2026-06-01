@@ -224,3 +224,37 @@ export function getComplianceSummary(evaluations: RuleEvaluation[]) {
     info: evaluations.filter(e => e.verdict === 'info').length,
   };
 }
+
+/**
+ * Shared mapping from logbook entry title keywords → compliance metric names.
+ * Used by compliance route, alerts route, queue, and report generator.
+ * Each tuple: [metric_name, [required_keywords_in_title (all must match)]]
+ */
+export const LOGBOOK_KEYWORD_MAPPINGS: [string, string[]][] = [
+  ["days_since_fire_drill", ["fire drill"]],
+  ["days_since_abandon_ship_drill", ["abandon ship"]],
+  ["days_since_lifesaving_weekly_inspection", ["lifesaving", "weekly"]],
+  ["days_since_lifesaving_monthly_inspection", ["lifesaving", "monthly"]],
+  ["days_since_fire_extinguisher_annual_inspection", ["fire extinguisher"]],
+  ["days_since_liferaft_annual_servicing", ["liferaft"]],
+  ["days_since_steering_gear_test", ["steering gear"]],
+  ["days_since_emergency_lighting_test", ["emergency lighting"]],
+  ["days_since_boiler_inspection", ["boiler"]],
+];
+
+/**
+ * Build a last_completed map from an array of logbook entries (ordered desc by timestamp).
+ */
+export function buildLastCompleted(entries: { title: string; timestamp: Date }[]): Record<string, Date> {
+  const last_completed: Record<string, Date> = {};
+  for (const entry of entries) {
+    const titleLower = entry.title.toLowerCase();
+    for (const [metric, keywords] of LOGBOOK_KEYWORD_MAPPINGS) {
+      if (!last_completed[metric] && keywords.every((kw) => titleLower.includes(kw))) {
+        last_completed[metric] = entry.timestamp;
+      }
+    }
+  }
+  return last_completed;
+}
+

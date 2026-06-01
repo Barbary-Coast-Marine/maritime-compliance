@@ -11,6 +11,8 @@ import { alertRoutes } from "./routes/alerts.js";
 import { authRoutes } from "./routes/auth.js";
 import { reportRoutes } from "./routes/reports.js";
 import { adminRoutes } from "./routes/admin.js";
+import { agentRoutes } from "./routes/agent.js";
+import { setupJobQueue } from "./queue.js";
 
 const port = Number(process.env.PORT ?? 3000);
 const host = process.env.HOST ?? "0.0.0.0";
@@ -41,6 +43,7 @@ async function main() {
   await app.register(alertRoutes, { prefix: "/api" });
   await app.register(reportRoutes, { prefix: "/api" });
   await app.register(adminRoutes, { prefix: "/api" });
+  await app.register(agentRoutes, { prefix: "/api" });
 
   // Graceful shutdown
   const shutdown = async () => {
@@ -53,6 +56,11 @@ async function main() {
 
   await app.listen({ port, host });
   app.log.info(`Maritime vessel-agent running on http://${host}:${port}`);
+
+  // Start job queue (non-fatal if it fails — app still runs without background jobs)
+  setupJobQueue(process.env.DATABASE_URL).catch((err) => {
+    app.log.error(err, "Job queue failed to start — background jobs disabled");
+  });
 }
 
 main().catch((err) => {

@@ -6,6 +6,7 @@ import {
   evaluateCompliance,
   getOverallStatus,
   getComplianceSummary,
+  buildLastCompleted,
 } from "../rule-engine.js";
 import { authPreHandler } from "../middleware/auth.js";
 import type { VesselComplianceState } from "../rule-engine.js";
@@ -37,40 +38,13 @@ async function buildVesselState(db: Database): Promise<{ vessel: any; state: Ves
     maintenance: ["days_since_steering_gear_test", "days_since_emergency_lighting_test"],
   };
 
-  const last_completed: Record<string, Date> = {};
-
-  // Query recent entries and map to metrics based on title keywords
   const recentEntries = await db
     .select()
     .from(logbookEntries)
     .orderBy(desc(logbookEntries.timestamp))
     .limit(100);
 
-  for (const entry of recentEntries) {
-    const titleLower = entry.title.toLowerCase();
-
-    // Map logbook entry titles to compliance metrics
-    const mappings: [string, string[]][] = [
-      ["days_since_fire_drill", ["fire drill"]],
-      ["days_since_abandon_ship_drill", ["abandon ship"]],
-      ["days_since_lifesaving_weekly_inspection", ["lifesaving", "weekly"]],
-      ["days_since_lifesaving_monthly_inspection", ["lifesaving", "monthly"]],
-      ["days_since_fire_extinguisher_annual_inspection", ["fire extinguisher"]],
-      ["days_since_liferaft_annual_servicing", ["liferaft"]],
-      ["days_since_steering_gear_test", ["steering gear"]],
-      ["days_since_emergency_lighting_test", ["emergency lighting"]],
-      ["days_since_boiler_inspection", ["boiler"]],
-    ];
-
-    for (const [metric, keywords] of mappings) {
-      if (keywords.every((kw) => titleLower.includes(kw))) {
-        // Only keep the most recent (first seen, since ordered desc)
-        if (!last_completed[metric]) {
-          last_completed[metric] = entry.timestamp;
-        }
-      }
-    }
-  }
+  const last_completed = buildLastCompleted(recentEntries);
 
   return {
     vessel,

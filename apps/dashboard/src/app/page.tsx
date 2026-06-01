@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback, useRef } from "react";
 import Link from "next/link";
-import { fetchVessel, fetchComplianceStatus, fetchLogbook } from "@/lib/api";
+import { fetchVessel, fetchComplianceStatus, fetchLogbook, isMockMode } from "@/lib/api";
 import type { ComplianceCheck, LogbookEntry } from "@/lib/mock-data";
 
 function formatDate(d: string) {
@@ -14,6 +14,7 @@ export default function BridgePage() {
   const [checks, setChecks] = useState<ComplianceCheck[]>([]);
   const [logs, setLogs] = useState<LogbookEntry[]>([]);
   const [loading, setLoading] = useState(true);
+  const [demoMode, setDemoMode] = useState(false);
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
   const [secondsAgo, setSecondsAgo] = useState(0);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -45,6 +46,7 @@ export default function BridgePage() {
       setLogs(l.entries.slice(0, 4));
       setLoading(false);
       setLastUpdated(new Date());
+      setDemoMode(isMockMode());
     });
   }, []);
 
@@ -92,6 +94,12 @@ export default function BridgePage() {
 
   return (
     <div className="space-y-5">
+      {demoMode && (
+        <div className="rounded-lg border border-amber-500/40 bg-amber-500/10 px-4 py-2 text-sm text-amber-300 flex items-center gap-2">
+          <span className="font-semibold">DEMO MODE</span>
+          <span className="text-amber-400/70">— vessel-agent API unreachable, showing sample data</span>
+        </div>
+      )}
       {/* Traffic light hero */}
       <div className="flex flex-col items-center py-6">
         <div className={`w-24 h-24 rounded-full ${cfg.color} ring-4 ${cfg.ring} ring-offset-4 ring-offset-navy flex items-center justify-center`}>

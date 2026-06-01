@@ -105,4 +105,69 @@ export async function logbookRoutes(app: FastifyInstance) {
     }
     return { entry };
   });
+
+  /**
+   * PATCH /api/logbook/:id
+   * Update a logbook entry (title, body, entry_type)
+   */
+  app.patch<{
+    Params: { id: string };
+    Body: {
+      entry_type?: "drill" | "inspection" | "fuel_dip" | "maintenance" | "general";
+      title?: string;
+      body?: string;
+    };
+  }>("/logbook/:id", { preHandler: authPreHandler }, async (request, reply) => {
+    const { id } = request.params;
+    const { entry_type, title, body } = request.body;
+
+    const [existing] = await db
+      .select({ id: logbookEntries.id })
+      .from(logbookEntries)
+      .where(eq(logbookEntries.id, id));
+
+    if (!existing) {
+      return reply.status(404).send({ error: "Entry not found" });
+    }
+
+    const updates: Partial<typeof logbookEntries.$inferInsert> = {};
+    if (entry_type !== undefined) updates.entryType = entry_type;
+    if (title !== undefined) updates.title = title;
+    if (body !== undefined) updates.body = body;
+
+    if (Object.keys(updates).length === 0) {
+      return reply.status(400).send({ error: "No fields to update" });
+    }
+
+    const [updated] = await db
+      .update(logbookEntries)
+      .set(updates)
+      .where(eq(logbookEntries.id, id))
+      .returning();
+
+    return { success: true, entry: updated };
+  });
+
+  /**
+   * DELETE /api/logbook/:id
+   * Delete a logbook entry
+   */
+  app.delete<{
+    Params: { id: string };
+  }>("/logbook/:id", { preHandler: authPreHandler }, async (request, reply) => {
+    const { id } = request.params;
+
+    const [existing] = await db
+      .select({ id: logbookEntries.id })
+      .from(logbookEntries)
+      .where(eq(logbookEntries.id, id));
+
+    if (!existing) {
+      return reply.status(404).send({ error: "Entry not found" });
+    }
+
+    await db.delete(logbookEntries).where(eq(logbookEntries.id, id));
+
+    return { success: true, deleted_id: id };
+  });
 }

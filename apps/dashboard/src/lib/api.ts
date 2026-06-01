@@ -16,7 +16,11 @@ import {
 } from "./mock-data";
 
 const BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:3200";
+  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3200";
+
+// Set to true when any API call falls back to mock data
+let _usingMockData = false;
+export function isMockMode(): boolean { return _usingMockData; }
 
 async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
   const headers: Record<string, string> = {
@@ -76,6 +80,7 @@ export async function fetchVessel() {
       complianceStatus: v.complianceStatus,
     };
   } catch {
+    _usingMockData = true;
     return mockVessel;
   }
 }
@@ -140,6 +145,7 @@ export async function fetchComplianceStatus(): Promise<{
       }));
     return { checks, summary: data.summary };
   } catch {
+    _usingMockData = true;
     return {
       checks: mockChecks,
       summary: {
@@ -196,6 +202,7 @@ export async function fetchLogbook(
     }));
     return { entries, total: data.total };
   } catch {
+    _usingMockData = true;
     let entries = mockLogbook;
     if (type) entries = entries.filter((e) => e.type === type);
     return { entries, total: entries.length };
@@ -238,6 +245,7 @@ export async function fetchAlerts(): Promise<Alert[]> {
       resolved: false,
     }));
   } catch {
+    _usingMockData = true;
     return mockAlerts;
   }
 }
@@ -309,6 +317,7 @@ export async function getPreDepartureItems(): Promise<PreDepartureItem[]> {
     }>("/api/vessel/pre-departure-items");
     return data.items;
   } catch {
+    _usingMockData = true;
     return mockPreDep;
   }
 }

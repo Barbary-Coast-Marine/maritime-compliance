@@ -1,10 +1,12 @@
 import PgBoss from "pg-boss";
 import { desc, eq } from "drizzle-orm";
 import { createDb, vessels, logbookEntries, complianceEvents, complianceRules } from "@maritime/db";
+import { sendViolationAlert } from "./agent/notifications.js";
 import { loadRules } from "@maritime/regulations";
 import {
   evaluateCompliance,
   getOverallStatus,
+  buildLastCompleted,
 } from "./rule-engine.js";
 import type { VesselComplianceState } from "./rule-engine.js";
 import * as path from "path";
@@ -46,36 +48,13 @@ export async function setupJobQueue(connectionString?: string): Promise<PgBoss> 
         return;
       }
 
-      // Build last_completed map from logbook entries
       const recentEntries = await db
         .select()
         .from(logbookEntries)
         .orderBy(desc(logbookEntries.timestamp))
         .limit(100);
 
-      const lastCompleted: Record<string, Date> = {};
-      const mappings: [string, string[]][] = [
-        ["days_since_fire_drill", ["fire drill"]],
-        ["days_since_abandon_ship_drill", ["abandon ship"]],
-        ["days_since_lifesaving_weekly_inspection", ["lifesaving", "weekly"]],
-        ["days_since_lifesaving_monthly_inspection", ["lifesaving", "monthly"]],
-        ["days_since_fire_extinguisher_annual_inspection", ["fire extinguisher"]],
-        ["days_since_liferaft_annual_servicing", ["liferaft"]],
-        ["days_since_steering_gear_test", ["steering gear"]],
-        ["days_since_emergency_lighting_test", ["emergency lighting"]],
-        ["days_since_boiler_inspection", ["boiler"]],
-      ];
-
-      for (const entry of recentEntries) {
-        const titleLower = entry.title.toLowerCase();
-        for (const [metric, keywords] of mappings) {
-          if (keywords.every((kw) => titleLower.includes(kw))) {
-            if (!lastCompleted[metric]) {
-              lastCompleted[metric] = entry.timestamp;
-            }
-          }
-        }
-      }
+      const lastCompleted = buildLastCompleted(recentEntries);
 
       // 3. Apply DB overrides: filter inactive rules and apply threshold overrides
       const dbRules = await db.select().from(complianceRules);
@@ -131,6 +110,14 @@ export async function setupJobQueue(connectionString?: string): Promise<PgBoss> 
         .where(eq(vessels.id, vessel.id));
 
       console.log(`Compliance check complete: ${overallStatus} (${evaluations.length} rules evaluated)`);
+
+      // Send violation alert email via Composio if any violations found
+      const violations = evaluations.filter((e) => e.verdict === "violation");
+      if (violations.length > 0 && process.env.COMPOSIO_API_KEY && process.env.ALERT_EMAIL) {
+        sendViolationAlert(vessel.id, vessel.name ?? "Vessel", violations).catch((err) => {
+          console.error("Failed to send violation alert:", err);
+        });
+      }
     } catch (err) {
       console.error("compliance-check job failed:", err);
       throw err;

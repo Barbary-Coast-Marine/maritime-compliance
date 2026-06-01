@@ -3,7 +3,7 @@ import { desc, eq, gte, lte, and } from 'drizzle-orm';
 import { vessels, logbookEntries, type Database } from '@maritime/db';
 import { loadRules } from '@maritime/regulations';
 import { generateAuditReport, type AuditReportData, type ComplianceItem, type LogEntry, type CertificateStatus } from '../reports/audit-report.js';
-import { evaluateCompliance } from '../rule-engine.js';
+import { evaluateCompliance, buildLastCompleted } from '../rule-engine.js';
 import type { VesselComplianceState } from '../rule-engine.js';
 import * as path from 'path';
 import { fileURLToPath } from 'url';
@@ -177,36 +177,13 @@ async function buildAuditReportData(
     app.log.warn({ errors }, 'Rule loading errors during report generation');
   }
 
-  // Build vessel state (same logic as compliance route)
   const allEntries = await db
     .select()
     .from(logbookEntries)
     .orderBy(desc(logbookEntries.timestamp))
     .limit(100);
 
-  const lastCompleted: Record<string, Date> = {};
-  const mappings: [string, string[]][] = [
-    ['days_since_fire_drill', ['fire drill']],
-    ['days_since_abandon_ship_drill', ['abandon ship']],
-    ['days_since_lifesaving_weekly_inspection', ['lifesaving', 'weekly']],
-    ['days_since_lifesaving_monthly_inspection', ['lifesaving', 'monthly']],
-    ['days_since_fire_extinguisher_annual_inspection', ['fire extinguisher']],
-    ['days_since_liferaft_annual_servicing', ['liferaft']],
-    ['days_since_steering_gear_test', ['steering gear']],
-    ['days_since_emergency_lighting_test', ['emergency lighting']],
-    ['days_since_boiler_inspection', ['boiler']],
-  ];
-
-  for (const entry of allEntries) {
-    const titleLower = entry.title.toLowerCase();
-    for (const [metric, keywords] of mappings) {
-      if (keywords.every(kw => titleLower.includes(kw))) {
-        if (!lastCompleted[metric]) {
-          lastCompleted[metric] = entry.timestamp;
-        }
-      }
-    }
-  }
+  const lastCompleted = buildLastCompleted(allEntries);
 
   const vesselState: VesselComplianceState = {
     last_completed: lastCompleted,
