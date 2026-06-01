@@ -13,9 +13,11 @@ import type { VesselComplianceState } from "../rule-engine.js";
 import * as path from "path";
 import { fileURLToPath } from "url";
 
-// Resolve the rules directory relative to the monorepo root
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const RULES_DIR = path.resolve(__dirname, "../../../../packages/regulations/rules");
+
+// Cache rules at module load — YAML disk reads are expensive per-request
+const { rules: CACHED_RULES, errors: RULE_LOAD_ERRORS } = loadRules(RULES_DIR);
 
 /**
  * Build vessel compliance state from DB data
@@ -68,7 +70,7 @@ export async function complianceRoutes(app: FastifyInstance) {
   app.get("/compliance/status", async (_request, reply) => {
     try {
       // Load rules from YAML
-      const { rules, errors } = loadRules(RULES_DIR);
+      const rules = CACHED_RULES; const errors = RULE_LOAD_ERRORS;
       if (errors.length > 0) {
         app.log.warn({ errors }, "Rule loading errors");
       }
@@ -84,16 +86,24 @@ export async function complianceRoutes(app: FastifyInstance) {
       // Apply DB overrides: filter inactive rules and apply threshold overrides
       const dbRules = await db.select().from(complianceRules);
       const dbRuleMap = new Map(dbRules.map((r) => [r.ruleCode, r]));
-      const activeRules = rules.filter((r) => {
-        const dbRule = dbRuleMap.get(r.rule_id);
-        if (dbRule && !dbRule.isActive) return false;
-        if (dbRule?.severityLevels) {
+      const activeRules = rules
+        .filter((r) => {
+          const dbRule = dbRuleMap.get(r.rule_id);
+          return !(dbRule && !dbRule.isActive);
+        })
+        .map((r) => {
+          const dbRule = dbRuleMap.get(r.rule_id);
+          if (!dbRule?.severityLevels) return r;
           const levels = dbRule.severityLevels as { warning_days?: number; critical_days?: number };
-          if (levels.warning_days != null) r.trigger.warning_days = levels.warning_days;
-          if (levels.critical_days != null) r.trigger.critical_days = levels.critical_days;
-        }
-        return true;
-      });
+          return {
+            ...r,
+            trigger: {
+              ...r.trigger,
+              ...(levels.warning_days != null && { warning_days: levels.warning_days }),
+              ...(levels.critical_days != null && { critical_days: levels.critical_days }),
+            },
+          };
+        });
 
       // Run the rule engine
       const evaluations = evaluateCompliance(activeRules, state);
@@ -119,7 +129,7 @@ export async function complianceRoutes(app: FastifyInstance) {
    */
   app.get("/compliance/rules", async (_request, reply) => {
     try {
-      const { rules, errors } = loadRules(RULES_DIR);
+      const rules = CACHED_RULES; const errors = RULE_LOAD_ERRORS;
       return {
         rules,
         errors: errors.length > 0 ? errors : undefined,
@@ -154,7 +164,7 @@ export async function complianceRoutes(app: FastifyInstance) {
       }
 
       // Find the rule to determine entry type
-      const { rules } = loadRules(RULES_DIR);
+      const rules = CACHED_RULES;
       const rule = rules.find((r) => r.rule_id === rule_id);
 
       const entryType = rule?.category === "drills"
@@ -198,7 +208,7 @@ export async function complianceRoutes(app: FastifyInstance) {
     const limit = request.query.limit ?? 10;
 
     try {
-      const { rules } = loadRules(RULES_DIR);
+      const rules = CACHED_RULES;
       const result = await buildVesselState(db);
       if (!result) {
         return reply.status(404).send({ error: "No vessel configured" });

@@ -1,7 +1,10 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import jwt from "jsonwebtoken";
 
-const AUTH_SECRET = process.env.AUTH_SECRET ?? "maritime-dev-secret";
+const AUTH_SECRET = process.env.AUTH_SECRET
+  ?? (process.env.NODE_ENV === "production"
+    ? (() => { throw new Error("AUTH_SECRET must be set in production"); })()
+    : "maritime-dev-secret");
 
 export interface AuthUser {
   id: string;

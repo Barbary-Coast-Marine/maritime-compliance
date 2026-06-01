@@ -59,16 +59,24 @@ export async function setupJobQueue(connectionString?: string): Promise<PgBoss> 
       // 3. Apply DB overrides: filter inactive rules and apply threshold overrides
       const dbRules = await db.select().from(complianceRules);
       const dbRuleMap = new Map(dbRules.map((r) => [r.ruleCode, r]));
-      const activeRules = rules.filter((r) => {
-        const dbRule = dbRuleMap.get(r.rule_id);
-        if (dbRule && !dbRule.isActive) return false;
-        if (dbRule?.severityLevels) {
+      const activeRules = rules
+        .filter((r) => {
+          const dbRule = dbRuleMap.get(r.rule_id);
+          return !(dbRule && !dbRule.isActive);
+        })
+        .map((r) => {
+          const dbRule = dbRuleMap.get(r.rule_id);
+          if (!dbRule?.severityLevels) return r;
           const levels = dbRule.severityLevels as { warning_days?: number; critical_days?: number };
-          if (levels.warning_days != null) r.trigger.warning_days = levels.warning_days;
-          if (levels.critical_days != null) r.trigger.critical_days = levels.critical_days;
-        }
-        return true;
-      });
+          return {
+            ...r,
+            trigger: {
+              ...r.trigger,
+              ...(levels.warning_days != null && { warning_days: levels.warning_days }),
+              ...(levels.critical_days != null && { critical_days: levels.critical_days }),
+            },
+          };
+        });
 
       const vesselState: VesselComplianceState = {
         last_completed: lastCompleted,

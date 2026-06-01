@@ -1,5 +1,6 @@
 import { FastifyInstance } from "fastify";
 import { vessels, complianceRules, crewProfiles, crewCredentials, complianceEvents, type Database } from "@maritime/db";
+import { authPreHandler } from "../middleware/auth.js";
 import { loadRules } from "@maritime/regulations";
 import { evaluateCompliance, buildLastCompleted } from "../rule-engine.js";
 import type { VesselComplianceState } from "../rule-engine.js";
@@ -10,6 +11,7 @@ import { fileURLToPath } from "url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const RULES_DIR = path.resolve(__dirname, "../../../../packages/regulations/rules");
+const { rules: CACHED_RULES } = loadRules(RULES_DIR);
 
 export async function alertRoutes(app: FastifyInstance) {
   const db = (app as any).db as Database;
@@ -23,7 +25,7 @@ export async function alertRoutes(app: FastifyInstance) {
   }>("/alerts", async (_request, reply) => {
     try {
       // Load rules and evaluate
-      const { rules } = loadRules(RULES_DIR);
+      const rules = CACHED_RULES;
 
       const [vessel] = await db.select().from(vessels).limit(1);
       if (!vessel) {
@@ -49,16 +51,24 @@ export async function alertRoutes(app: FastifyInstance) {
       // Apply DB overrides: filter inactive rules and apply threshold overrides
       const dbRules = await db.select().from(complianceRules);
       const dbRuleMap = new Map(dbRules.map((r) => [r.ruleCode, r]));
-      const activeRules = rules.filter((r) => {
-        const dbRule = dbRuleMap.get(r.rule_id);
-        if (dbRule && !dbRule.isActive) return false;
-        if (dbRule?.severityLevels) {
+      const activeRules = rules
+        .filter((r) => {
+          const dbRule = dbRuleMap.get(r.rule_id);
+          return !(dbRule && !dbRule.isActive);
+        })
+        .map((r) => {
+          const dbRule = dbRuleMap.get(r.rule_id);
+          if (!dbRule?.severityLevels) return r;
           const levels = dbRule.severityLevels as { warning_days?: number; critical_days?: number };
-          if (levels.warning_days != null) r.trigger.warning_days = levels.warning_days;
-          if (levels.critical_days != null) r.trigger.critical_days = levels.critical_days;
-        }
-        return true;
-      });
+          return {
+            ...r,
+            trigger: {
+              ...r.trigger,
+              ...(levels.warning_days != null && { warning_days: levels.warning_days }),
+              ...(levels.critical_days != null && { critical_days: levels.critical_days }),
+            },
+          };
+        });
 
       const evaluations = evaluateCompliance(activeRules, state);
 
@@ -189,7 +199,7 @@ export async function alertRoutes(app: FastifyInstance) {
   app.post<{
     Params: { id: string };
     Body: { acknowledged_by: string };
-  }>("/alerts/:id/acknowledge", async (request, reply) => {
+  }>("/alerts/:id/acknowledge", { preHandler: authPreHandler }, async (request, reply) => {
     const { id } = request.params;
     const { acknowledged_by } = request.body;
 
@@ -220,7 +230,7 @@ export async function alertRoutes(app: FastifyInstance) {
   app.post<{
     Params: { id: string };
     Body: { resolved_by: string; action_taken: string };
-  }>("/alerts/:id/resolve", async (request, reply) => {
+  }>("/alerts/:id/resolve", { preHandler: authPreHandler }, async (request, reply) => {
     const { id } = request.params;
     const { resolved_by, action_taken } = request.body;
 

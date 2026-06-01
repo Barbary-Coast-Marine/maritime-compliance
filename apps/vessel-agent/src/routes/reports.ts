@@ -15,13 +15,13 @@ export async function reportRoutes(app: FastifyInstance) {
   const db = (app as any).db as Database;
 
   /**
-   * GET /api/reports/audit
+   * GET /reports/audit
    * Generate USCG audit report PDF
    * Query params: start (ISO date), end (ISO date)
    */
   app.get<{
     Querystring: { start?: string; end?: string };
-  }>('/api/reports/audit', async (request, reply) => {
+  }>('/reports/audit', async (request, reply) => {
     const now = new Date();
     const start = request.query.start || new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
     const end = request.query.end || now.toISOString().split('T')[0];
@@ -57,12 +57,12 @@ export async function reportRoutes(app: FastifyInstance) {
   });
 
   /**
-   * GET /api/reports/drills
+   * GET /reports/drills
    * Generate drill compliance report PDF
    */
   app.get<{
     Querystring: { start?: string; end?: string };
-  }>('/api/reports/drills', async (request, reply) => {
+  }>('/reports/drills', async (request, reply) => {
     const now = new Date();
     const start = request.query.start || new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
     const end = request.query.end || now.toISOString().split('T')[0];
@@ -92,12 +92,12 @@ export async function reportRoutes(app: FastifyInstance) {
   });
 
   /**
-   * GET /api/reports/pre-departure
+   * GET /reports/pre-departure
    * Generate pre-departure records PDF
    */
   app.get<{
     Querystring: { start?: string; end?: string };
-  }>('/api/reports/pre-departure', async (request, reply) => {
+  }>('/reports/pre-departure', async (request, reply) => {
     const now = new Date();
     const start = request.query.start || new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
     const end = request.query.end || now.toISOString().split('T')[0];

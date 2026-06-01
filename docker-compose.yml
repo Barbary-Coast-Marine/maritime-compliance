@@ -39,6 +39,12 @@ services:
       DATABASE_URL: postgresql://${DB_USER:-marinedb}:${DB_PASSWORD:-marinedev}@db:5432/maritime_compliance
       AUTH_SECRET: ${AUTH_SECRET:-maritime-dev-secret-change-me}
       PORT: "3000"
+      NEBIUS_API_KEY: ${NEBIUS_API_KEY:-}
+      NEBIUS_API_URL: ${NEBIUS_API_URL:-https://api.studio.nebius.ai/v1/}
+      NEBIUS_MODEL: ${NEBIUS_MODEL:-meta-llama/Meta-Llama-3.1-70B-Instruct-fast}
+      TAVILY_API_KEY: ${TAVILY_API_KEY:-}
+      COMPOSIO_API_KEY: ${COMPOSIO_API_KEY:-}
+      ALERT_EMAIL: ${ALERT_EMAIL:-}
     depends_on:
       db:
         condition: service_healthy

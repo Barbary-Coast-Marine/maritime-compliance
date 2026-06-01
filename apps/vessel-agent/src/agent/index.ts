@@ -250,33 +250,38 @@ Be concise and nautical. Confirm actions clearly.`;
     const choice = response.choices[0];
     messages.push(choice.message);
 
-    if (choice.finish_reason !== "tool_calls" || !choice.message.tool_calls?.length) {
+    if (!choice.message.tool_calls?.length) {
       return { reply: choice.message.content ?? "", actions };
     }
 
     // Process each tool call (filter to standard function tool calls)
     for (const toolCall of choice.message.tool_calls) {
       if (!("function" in toolCall)) continue;
-      const args = JSON.parse(toolCall.function.arguments);
       let result: string;
 
-      if (toolCall.function.name === "create_logbook_entry") {
-        const outcome = await toolCreateLogbookEntry(db, author, args);
-        result = outcome.success
-          ? `Entry created: ${args.title} (ID: ${outcome.entry_id})`
-          : `Failed: ${outcome.error}`;
-        actions.push({ type: "logbook_entry_created", data: { ...args, ...outcome } });
+      try {
+        const args = JSON.parse(toolCall.function.arguments);
 
-      } else if (toolCall.function.name === "get_compliance_status") {
-        result = await toolGetComplianceStatus(db);
-        actions.push({ type: "compliance_checked", data: {} });
+        if (toolCall.function.name === "create_logbook_entry") {
+          const outcome = await toolCreateLogbookEntry(db, author, args);
+          result = outcome.success
+            ? `Entry created: ${args.title} (ID: ${outcome.entry_id})`
+            : `Failed: ${outcome.error}`;
+          actions.push({ type: "logbook_entry_created", data: { ...args, ...outcome } });
 
-      } else if (toolCall.function.name === "search_regulation") {
-        result = await toolSearchRegulation(args.query);
-        actions.push({ type: "regulation_searched", data: { query: args.query } });
+        } else if (toolCall.function.name === "get_compliance_status") {
+          result = await toolGetComplianceStatus(db);
+          actions.push({ type: "compliance_checked", data: {} });
 
-      } else {
-        result = "Unknown tool";
+        } else if (toolCall.function.name === "search_regulation") {
+          result = await toolSearchRegulation(args.query);
+          actions.push({ type: "regulation_searched", data: { query: args.query } });
+
+        } else {
+          result = "Unknown tool";
+        }
+      } catch (toolErr) {
+        result = `Tool error: ${(toolErr as Error).message}`;
       }
 
       messages.push({
