@@ -30,7 +30,7 @@ async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
 
   // Include auth token when available
   if (typeof window !== "undefined") {
-    const token = localStorage.getItem("maritime_token");
+    const token = localStorage.getItem("auth_token");
     if (token) {
       headers["Authorization"] = `Bearer ${token}`;
     }
@@ -43,7 +43,7 @@ async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
   // Handle 401 proactively
   if (res.status === 401) {
     if (typeof window !== "undefined") {
-      localStorage.removeItem("maritime_token");
+      localStorage.removeItem("auth_token");
       window.location.href = '/login';
     }
     throw new Error("Unauthorized");
