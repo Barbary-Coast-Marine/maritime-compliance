@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback, useRef } from "react";
 import Link from "next/link";
 import { fetchVessel, fetchComplianceStatus, fetchLogbook, isMockMode } from "@/lib/api";
 import type { ComplianceCheck, LogbookEntry } from "@/lib/mock-data";
+import { ChatPanel } from "./chat-panel";
 
 function formatDate(d: string) {
   return new Date(d).toLocaleDateString("en-US", { month: "short", day: "numeric" });
@@ -93,6 +94,7 @@ export default function BridgePage() {
   const updatedText = secondsAgo < 10 ? "Just now" : `${secondsAgo}s ago`;
 
   return (
+    <>
     <div className="space-y-5">
       {demoMode && (
         <div className="rounded-lg border border-amber-500/40 bg-amber-500/10 px-4 py-2 text-sm text-amber-300 flex items-center gap-2">
@@ -192,6 +194,8 @@ export default function BridgePage() {
         </div>
       </section>
     </div>
+    <ChatPanel onRefresh={refreshData} />
+    </>
   );
 }
 

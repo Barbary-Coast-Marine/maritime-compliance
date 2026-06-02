@@ -68,6 +68,7 @@ export async function fetchVessel() {
         complianceStatus: string;
       };
     }>("/api/vessel");
+    _usingMockData = false;
     const v = data.vessel;
     return {
       name: v.name,
@@ -132,6 +133,7 @@ export async function fetchComplianceStatus(): Promise<{
 }> {
   try {
     const data = await apiFetch<ComplianceResponse>("/api/compliance/status");
+    _usingMockData = false;
     const checks: ComplianceCheck[] = data.evaluations
       .filter((e) => e.verdict !== "not_applicable" && e.verdict !== "info")
       .map((e) => ({
@@ -192,6 +194,7 @@ export async function fetchLogbook(
       total: number;
     }>(`/api/logbook?${params}`);
 
+    _usingMockData = false;
     const entries: LogbookEntry[] = data.entries.map((e) => ({
       id: e.id,
       date: e.timestamp,
@@ -234,6 +237,7 @@ export async function fetchAlerts(): Promise<Alert[]> {
       count: number;
     }>("/api/alerts");
 
+    _usingMockData = false;
     return data.alerts.map((a) => ({
       id: a.rule_id,
       severity: mapSeverity(a.severity),
@@ -304,6 +308,33 @@ export async function downloadPreDepartureReport(start: string, end: string): Pr
   return res.blob();
 }
 
+// ── Agent Chat ──────────────────────────────────────────
+
+export interface AgentAction {
+  type: "logbook_entry_created" | "compliance_checked" | "regulation_searched";
+  data: Record<string, unknown>;
+}
+
+export interface AgentChatMessage {
+  role: "user" | "assistant";
+  content: string;
+}
+
+export interface AgentChatResponse {
+  reply: string;
+  actions: AgentAction[];
+}
+
+export async function agentChat(
+  message: string,
+  history: AgentChatMessage[]
+): Promise<AgentChatResponse> {
+  return apiFetch<AgentChatResponse>("/api/agent/chat", {
+    method: "POST",
+    body: JSON.stringify({ message, history }),
+  });
+}
+
 // ── Pre-departure items ─────────────────────────────────
 
 export async function getPreDepartureItems(): Promise<PreDepartureItem[]> {
@@ -315,6 +346,7 @@ export async function getPreDepartureItems(): Promise<PreDepartureItem[]> {
         citation?: string;
       }>;
     }>("/api/vessel/pre-departure-items");
+    _usingMockData = false;
     return data.items;
   } catch {
     _usingMockData = true;

@@ -13,10 +13,11 @@ const RULES_DIR = path.resolve(__dirname, "../../../../packages/regulations/rule
 
 // ── Nebius client (OpenAI-compatible) ────────────────────
 export function createNebiusClient() {
-  return new OpenAI({
-    baseURL: process.env.NEBIUS_API_URL ?? "https://api.studio.nebius.ai/v1/",
-    apiKey: process.env.NEBIUS_API_KEY ?? "",
-  });
+  const baseURL = process.env.NEBIUS_API_URL ?? "https://api.studio.nebius.ai/v1/";
+  const apiKey = baseURL.includes("groq.com")
+    ? (process.env.GROQ_API_KEY ?? process.env.NEBIUS_API_KEY ?? "")
+    : (process.env.NEBIUS_API_KEY ?? "");
+  return new OpenAI({ baseURL, apiKey });
 }
 
 const MODEL = process.env.NEBIUS_MODEL ?? "meta-llama/Meta-Llama-3.1-70B-Instruct-fast";
