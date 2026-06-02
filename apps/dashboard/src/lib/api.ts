@@ -335,6 +335,25 @@ export async function agentChat(
   });
 }
 
+// ── Intel Feed ──────────────────────────────────────────
+
+export interface IntelItem {
+  title: string;
+  url: string;
+  snippet: string;
+  source: string;
+  published_date: string | null;
+}
+
+export interface IntelFeedResponse {
+  items: IntelItem[];
+  fetched_at: string;
+}
+
+export async function fetchIntelFeed(): Promise<IntelFeedResponse> {
+  return apiFetch<IntelFeedResponse>("/api/intel/feed");
+}
+
 // ── Pre-departure items ─────────────────────────────────
 
 export async function getPreDepartureItems(): Promise<PreDepartureItem[]> {

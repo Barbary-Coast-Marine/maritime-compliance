@@ -8,6 +8,7 @@ import { vesselRoutes } from "./routes/vessel.js";
 import { complianceRoutes } from "./routes/compliance.js";
 import { logbookRoutes } from "./routes/logbook.js";
 import { alertRoutes } from "./routes/alerts.js";
+import { intelRoutes } from "./routes/intel.js";
 import { authRoutes } from "./routes/auth.js";
 import { reportRoutes } from "./routes/reports.js";
 import { adminRoutes } from "./routes/admin.js";
@@ -41,6 +42,7 @@ async function main() {
   await app.register(complianceRoutes, { prefix: "/api" });
   await app.register(logbookRoutes, { prefix: "/api" });
   await app.register(alertRoutes, { prefix: "/api" });
+  await app.register(intelRoutes, { prefix: "/api" });
   await app.register(reportRoutes, { prefix: "/api" });
   await app.register(adminRoutes, { prefix: "/api" });
   await app.register(agentRoutes, { prefix: "/api" });

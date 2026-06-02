@@ -38,6 +38,7 @@ function AppContent({ children }: { children: React.ReactNode }) {
 
   // Secondary items in "More" drawer
   const moreTabs = [
+    { href: "/intel", label: "Intel", icon: IntelIcon },
     { href: "/reports", label: "Reports", icon: ReportsIcon },
     ...(isAdmin ? [{ href: "/admin", label: "Admin", icon: AdminIcon }] : []),
   ];
@@ -185,6 +186,16 @@ function ReportsIcon() {
       <polyline points="14 2 14 8 20 8" />
       <line x1="16" y1="13" x2="8" y2="13" />
       <line x1="16" y1="17" x2="8" y2="17" />
+    </svg>
+  );
+}
+
+function IntelIcon() {
+  return (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M4 14a8 8 0 0116 0" />
+      <path d="M7.5 14a4.5 4.5 0 019 0" />
+      <circle cx="12" cy="14" r="1" fill="currentColor" stroke="none" />
     </svg>
   );
 }
