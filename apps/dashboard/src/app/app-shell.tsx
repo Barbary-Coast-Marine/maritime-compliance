@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { AuthProvider, useAuth } from "@/lib/auth-context";
+import { ChatPanel } from "./chat-panel";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   return (
@@ -98,6 +99,9 @@ function AppContent({ children }: { children: React.ReactNode }) {
           </div>
         </>
       )}
+
+      {/* Chat panel — available on all authenticated pages */}
+      <ChatPanel />
 
       {/* Bottom nav */}
       <nav className="fixed bottom-0 left-0 right-0 z-50 bg-navy-surface border-t border-navy-border" style={{ paddingBottom: "env(safe-area-inset-bottom)" }}>

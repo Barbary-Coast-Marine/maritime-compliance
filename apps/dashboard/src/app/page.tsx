@@ -4,7 +4,6 @@ import { useEffect, useState, useCallback, useRef } from "react";
 import Link from "next/link";
 import { fetchVessel, fetchComplianceStatus, fetchLogbook, isMockMode } from "@/lib/api";
 import type { ComplianceCheck, LogbookEntry } from "@/lib/mock-data";
-import { ChatPanel } from "./chat-panel";
 
 function formatDate(d: string) {
   return new Date(d).toLocaleDateString("en-US", { month: "short", day: "numeric" });
@@ -194,7 +193,6 @@ export default function BridgePage() {
         </div>
       </section>
     </div>
-    <ChatPanel onRefresh={refreshData} />
     </>
   );
 }

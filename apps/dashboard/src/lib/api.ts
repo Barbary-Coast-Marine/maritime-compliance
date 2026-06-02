@@ -40,12 +40,7 @@ async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
     ...init,
     headers,
   });
-  // Handle 401 proactively
   if (res.status === 401) {
-    if (typeof window !== "undefined") {
-      localStorage.removeItem("auth_token");
-      window.location.href = '/login';
-    }
     throw new Error("Unauthorized");
   }
   return res.json() as Promise<T>;
