@@ -1,0 +1,37 @@
+FROM node:20-slim AS base
+RUN corepack enable && corepack prepare pnpm@10.33.0 --activate
+WORKDIR /app
+
+# Install dependencies
+COPY pnpm-workspace.yaml package.json pnpm-lock.yaml ./
+COPY packages/db/package.json packages/db/
+COPY packages/types/package.json packages/types/
+COPY packages/regulations/package.json packages/regulations/
+COPY apps/dashboard/package.json apps/dashboard/
+RUN pnpm install --frozen-lockfile
+
+# Copy source
+COPY packages/ packages/
+COPY apps/dashboard/ apps/dashboard/
+COPY tsconfig.json ./
+
+# Build shared packages
+RUN pnpm --filter @maritime/types build && \
+    pnpm --filter @maritime/db build
+
+# Build dashboard (NEXT_PUBLIC_API_URL="" uses relative URLs through nginx)
+ENV NEXT_PUBLIC_API_URL=""
+RUN pnpm --filter dashboard build
+
+# Standalone output is self-contained
+FROM node:20-slim AS runner
+WORKDIR /app
+
+COPY --from=base /app/apps/dashboard/.next/standalone ./
+COPY --from=base /app/apps/dashboard/.next/static ./apps/dashboard/.next/static
+COPY --from=base /app/apps/dashboard/public ./apps/dashboard/public
+
+ENV NODE_ENV=production
+EXPOSE 3000
+
+CMD ["node", "apps/dashboard/server.js"]

@@ -21,5 +21,5 @@ RUN pnpm --filter @maritime/types build && \
 # Copy migrations
 COPY packages/db/drizzle packages/db/drizzle/
 
-EXPOSE 3000
+EXPOSE 3200
 CMD ["node", "apps/vessel-agent/dist/server.js"]
