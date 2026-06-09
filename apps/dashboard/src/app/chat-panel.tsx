@@ -198,6 +198,9 @@ function MessageBubble({ message }: { message: ChatMessage }) {
             ))}
           </div>
         )}
+        {!isUser && !message.error && (
+          <span className="text-[10px] text-slate-muted/60 mt-0.5">Powered by Nebius</span>
+        )}
       </div>
     </div>
   );

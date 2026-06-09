@@ -199,7 +199,7 @@ export async function vesselRoutes(app: FastifyInstance) {
    * Returns pre-departure checklist items for this vessel's subchapter
    */
   app.get("/vessel/pre-departure-items", async (_request) => {
-    // Phase 0: static list based on Subchapter H (SS Jeremiah O'Brien)
+    // Static checklist for Subchapter H passenger vessels (46 CFR 78.47, 78.33, 78.53, etc.)
     const items = [
       { id: "pd-1", label: "Steering gear tested", citation: "46 CFR 78.47" },
       { id: "pd-2", label: "Whistle tested", citation: "46 CFR 78.47" },

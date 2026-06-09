@@ -1,3 +1,11 @@
+/**
+ * Maritime Intelligence Feed — /api/intel/feed
+ *
+ * Polls Tavily (web search API) for current USCG safety alerts, Port State
+ * Control inspection focus areas, and CFR compliance updates. Results are
+ * merged from three queries, deduped by URL, sorted by recency, and cached
+ * for 30 minutes to avoid hammering the Tavily quota on every page load.
+ */
 import { FastifyInstance } from "fastify";
 import { tavily } from "@tavily/core";
 

@@ -223,7 +223,7 @@ async function seed() {
     {
       vesselId: vessel.id,
       entryType: "drill" as const,
-      timestamp: daysAgo(2),
+      timestamp: daysAgo(12),
       author: "Capt. Cevan Lesieur",
       title: "Fire Drill",
       body: "Weekly fire drill conducted. All crew mustered at stations. Fire pumps tested, hose outlets operational. Breathing apparatus demonstrated. Watertight doors cycled. All hands accounted for.",
@@ -271,7 +271,7 @@ async function seed() {
     {
       vesselId: vessel.id,
       entryType: "drill" as const,
-      timestamp: daysAgo(9),
+      timestamp: daysAgo(19),
       author: "Capt. Cevan Lesieur",
       title: "Fire Drill",
       body: "Weekly fire drill. All crew present. General alarm sounded. Fire teams deployed to simulated fire in engine room. CO2 system demonstrated (dry run). All watertight doors tested.",

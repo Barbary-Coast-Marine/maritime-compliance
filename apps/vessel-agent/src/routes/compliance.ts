@@ -26,20 +26,6 @@ async function buildVesselState(db: Database): Promise<{ vessel: any; state: Ves
   const [vessel] = await db.select().from(vessels).limit(1);
   if (!vessel) return null;
 
-  // Get the most recent logbook entry per type to determine last_completed dates
-  // We map entry types to rule metrics
-  const metricMap: Record<string, string[]> = {
-    drill: ["days_since_fire_drill", "days_since_abandon_ship_drill"],
-    inspection: [
-      "days_since_lifesaving_weekly_inspection",
-      "days_since_lifesaving_monthly_inspection",
-      "days_since_fire_extinguisher_annual_inspection",
-      "days_since_liferaft_annual_servicing",
-      "days_since_boiler_inspection",
-    ],
-    maintenance: ["days_since_steering_gear_test", "days_since_emergency_lighting_test"],
-  };
-
   const recentEntries = await db
     .select()
     .from(logbookEntries)
@@ -69,10 +55,9 @@ export async function complianceRoutes(app: FastifyInstance) {
    */
   app.get("/compliance/status", async (_request, reply) => {
     try {
-      // Load rules from YAML
-      const rules = CACHED_RULES; const errors = RULE_LOAD_ERRORS;
-      if (errors.length > 0) {
-        app.log.warn({ errors }, "Rule loading errors");
+      const rules = CACHED_RULES;
+      if (RULE_LOAD_ERRORS.length > 0) {
+        app.log.warn({ errors: RULE_LOAD_ERRORS }, "Rule loading errors");
       }
 
       // Build vessel state from DB
@@ -129,11 +114,10 @@ export async function complianceRoutes(app: FastifyInstance) {
    */
   app.get("/compliance/rules", async (_request, reply) => {
     try {
-      const rules = CACHED_RULES; const errors = RULE_LOAD_ERRORS;
       return {
-        rules,
-        errors: errors.length > 0 ? errors : undefined,
-        count: rules.length,
+        rules: CACHED_RULES,
+        errors: RULE_LOAD_ERRORS.length > 0 ? RULE_LOAD_ERRORS : undefined,
+        count: CACHED_RULES.length,
       };
     } catch (err) {
       return reply.status(500).send({ error: "Failed to load rules" });

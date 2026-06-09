@@ -45,7 +45,7 @@ cp .env.example .env        # fill in your API keys
 docker compose up --build
 ```
 
-Open [http://localhost](http://localhost) — login with `captain` / `demo2026`
+Open [http://localhost](http://localhost) — login with `captain` / `obrien2026`
 
 The first startup runs database migrations and seeds demo vessel data automatically.
 

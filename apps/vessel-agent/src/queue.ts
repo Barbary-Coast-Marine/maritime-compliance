@@ -133,10 +133,8 @@ export async function setupJobQueue(connectionString?: string): Promise<PgBoss> 
   });
 
   // ─── telemetry-ingest handler ────────────────────────────
-  await boss.work("telemetry-ingest", async ([job]) => {
-    // Phase 1: NMEA/Modbus sensor processing
-    console.log("Telemetry ingest received:", JSON.stringify(job.data));
-  });
+  // Placeholder — NMEA/Modbus sensor ingestion not yet implemented
+  await boss.work("telemetry-ingest", async ([_job]) => {});
 
   // ─── report-generate handler ─────────────────────────────
   await boss.work("report-generate", async ([job]) => {
@@ -147,17 +145,14 @@ export async function setupJobQueue(connectionString?: string): Promise<PgBoss> 
       type: string;
     };
 
-    console.log(`Generating ${type} report for vessel ${vessel_id}: ${start} to ${end}`);
-
     try {
-      // TODO Phase 1: generate actual PDF and save to document_vault table
+      // On-demand report requests are fulfilled synchronously via GET /reports/audit.
+      // This job slot is reserved for future async PDF generation and archiving.
       const [vessel] = await db.select().from(vessels).limit(1);
       if (!vessel) {
         console.warn("report-generate: No vessel configured, skipping");
         return;
       }
-
-      console.log(`Report generation acknowledged for ${type} (${start} — ${end})`);
     } catch (err) {
       console.error("report-generate job failed:", err);
       throw err;

@@ -1,5 +1,5 @@
 import { FastifyInstance } from "fastify";
-import { eq, desc, sql, count } from "drizzle-orm";
+import { eq, desc, count } from "drizzle-orm";
 import { logbookEntries, vessels, users, type Database } from "@maritime/db";
 import { authPreHandler } from "../middleware/auth.js";
 
@@ -14,11 +14,6 @@ export async function logbookRoutes(app: FastifyInstance) {
     Querystring: { type?: string; limit?: number; offset?: number };
   }>("/logbook", async (request, _reply) => {
     const { type, limit = 50, offset = 0 } = request.query;
-
-    const conditions = [];
-    if (type) {
-      conditions.push(eq(logbookEntries.entryType, type as any));
-    }
 
     const baseQuery = type
       ? db.select().from(logbookEntries).where(eq(logbookEntries.entryType, type as any))

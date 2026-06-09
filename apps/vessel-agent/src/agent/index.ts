@@ -1,3 +1,11 @@
+/**
+ * Compliance Agent — natural language interface for crew
+ *
+ * Uses an OpenAI-compatible LLM (Nebius by default, Groq as fallback) with
+ * three tools: create_logbook_entry, get_compliance_status, search_regulation.
+ * The agentic loop runs up to 5 turns so the model can chain tool calls
+ * (e.g., look up a reg, then create a logbook entry) before returning a reply.
+ */
 import OpenAI from "openai";
 import { tavily } from "@tavily/core";
 import type { Database } from "@maritime/db";
