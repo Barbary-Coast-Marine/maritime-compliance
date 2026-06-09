@@ -51,7 +51,7 @@ There's no software built for this. We're fixing that.
 
 ## LINKEDIN POST
 
-I'm a compliance advisor for the SS Jeremiah O'Brien — a 1943 Liberty Ship operating as a seagoing museum in San Francisco under USCG Subchapter H.
+I'm the IT advisor for the SS Jeremiah O'Brien — a 1943 Liberty Ship operating as a seagoing museum in San Francisco under USCG Subchapter H.
 
 I've watched the crew track drills, inspections, and certificates with spreadsheets and paper logbooks. A missed fire drill means a $25,000 fine or Port State Control detention. When the chief engineer retires, the institutional knowledge goes with him.
 
