@@ -28,7 +28,7 @@ export function createNebiusClient() {
   return new OpenAI({ baseURL, apiKey });
 }
 
-const MODEL = process.env.NEBIUS_MODEL ?? "meta-llama/Meta-Llama-3.1-70B-Instruct-fast";
+const MODEL = process.env.NEBIUS_MODEL ?? "meta-llama/Llama-3.3-70B-Instruct";
 
 // ── Tavily client ────────────────────────────────────────
 function createTavilyClient() {
