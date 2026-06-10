@@ -9,6 +9,26 @@ Login: `captain` / `obrien2026`
 
 ---
 
+## See It Work
+
+**1. The dashboard opens with an overdue fire drill — vessel out of compliance:**
+
+![Dashboard with overdue fire drill alert](docs/screenshots/dashboard-alerts.png)
+
+**2. A crew member tells the agent what happened, in plain language:**
+
+![Compliance Assistant chat panel](docs/screenshots/chat-assistant.png)
+
+**3. The agent verifies the rule (46 CFR 78.37), writes the structured logbook entry, and re-checks compliance — every action badged and auditable:**
+
+![Agent logs the fire drill and clears the alert](docs/screenshots/agent-logs-drill.png)
+
+**4. The alert clears. The ship is back in compliance. An inspector can board right now:**
+
+![Dashboard after — zero overdue](docs/screenshots/dashboard-after.png)
+
+---
+
 ## The Problem
 
 Commercial vessel operators face a maze of USCG, ABS, and IMO regulations. Missing a drill deadline, an expired certificate, or a skipped inspection means fines ($5k–$100k+), vessel detention, or worse — safety incidents at sea.
