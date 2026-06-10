@@ -1,6 +1,6 @@
 import { pgTable, uuid, varchar, date, timestamp, boolean, text } from "drizzle-orm/pg-core";
-import { users } from "./users";
-import { vessels } from "./vessels";
+import { users } from "./users.js";
+import { vessels } from "./vessels.js";
 
 export const crewProfiles = pgTable("crew_profiles", {
   id: uuid("id").primaryKey().defaultRandom(),

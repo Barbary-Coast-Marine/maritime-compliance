@@ -1,6 +1,6 @@
 import { pgTable, uuid, varchar, date, timestamp, text } from "drizzle-orm/pg-core";
-import { crewProfiles } from "./crew-profiles";
-import { documentVault } from "./document-vault";
+import { crewProfiles } from "./crew-profiles.js";
+import { documentVault } from "./document-vault.js";
 
 export const crewCredentials = pgTable("crew_credentials", {
   id: uuid("id").primaryKey().defaultRandom(),

@@ -26,4 +26,6 @@ COPY packages/regulations/rules packages/regulations/rules/
 COPY packages/db/drizzle packages/db/drizzle/
 
 EXPOSE 3000
-CMD ["node", "apps/vessel-agent/dist/server.js"]
+# Run via tsx: workspace packages resolve entrypoints to .ts source,
+# which compiled node output cannot load.
+CMD ["pnpm", "--filter", "@maritime/vessel-agent", "exec", "tsx", "src/server.ts"]

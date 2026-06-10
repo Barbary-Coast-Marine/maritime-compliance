@@ -1,4 +1,4 @@
-import { createDb, vessels, users, logbookEntries, crewProfiles, crewCredentials } from "./index";
+import { createDb, vessels, users, logbookEntries, crewProfiles, crewCredentials } from "./index.js";
 import bcrypt from "bcryptjs";
 
 const db = createDb();

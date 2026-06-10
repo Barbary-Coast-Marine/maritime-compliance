@@ -1,5 +1,5 @@
 import { pgTable, uuid, varchar, timestamp, date, boolean, text } from "drizzle-orm/pg-core";
-import { vessels } from "./vessels";
+import { vessels } from "./vessels.js";
 
 export const documentVault = pgTable("document_vault", {
   id: uuid("id").primaryKey().defaultRandom(),

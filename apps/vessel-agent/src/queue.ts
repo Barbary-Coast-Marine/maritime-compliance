@@ -28,6 +28,10 @@ export async function setupJobQueue(connectionString?: string): Promise<PgBoss> 
   await boss.start();
   bossInstance = boss;
 
+  // pg-boss v10 requires queues to exist before work()/schedule()
+  await boss.createQueue("compliance-check");
+  await boss.createQueue("report-generate");
+
   const db = createDb(connStr);
 
   // ─── compliance-check handler ────────────────────────────

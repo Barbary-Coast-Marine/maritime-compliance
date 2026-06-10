@@ -1,5 +1,5 @@
 import { pgTable, uuid, varchar, jsonb, text, date, boolean, pgEnum } from "drizzle-orm/pg-core";
-import { regulationSections } from "./regulation-sections";
+import { regulationSections } from "./regulation-sections.js";
 
 export const triggerTypeEnum = pgEnum("trigger_type", ["calendar", "threshold", "event"]);
 

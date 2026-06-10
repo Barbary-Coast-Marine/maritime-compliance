@@ -1,5 +1,5 @@
 import { pgTable, uuid, timestamp, varchar, numeric, pgEnum } from "drizzle-orm/pg-core";
-import { vessels } from "./vessels";
+import { vessels } from "./vessels.js";
 
 export const qualityFlagEnum = pgEnum("quality_flag", ["good", "suspect", "bad", "missing"]);
 

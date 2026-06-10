@@ -1,5 +1,5 @@
 import { pgTable, uuid, varchar, timestamp, jsonb, text } from "drizzle-orm/pg-core";
-import { vessels } from "./vessels";
+import { vessels } from "./vessels.js";
 
 /**
  * Immutable, append-only audit log.

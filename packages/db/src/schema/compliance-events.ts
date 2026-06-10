@@ -1,5 +1,5 @@
 import { pgTable, uuid, varchar, timestamp, text, numeric, pgEnum } from "drizzle-orm/pg-core";
-import { vessels } from "./vessels";
+import { vessels } from "./vessels.js";
 
 export const verdictEnum = pgEnum("verdict", ["pass", "warning", "violation", "info"]);
 

@@ -22,4 +22,6 @@ RUN pnpm --filter @maritime/types build && \
 COPY packages/db/drizzle packages/db/drizzle/
 
 EXPOSE 3200
-CMD ["node", "apps/vessel-agent/dist/server.js"]
+# Run via tsx: workspace packages resolve entrypoints to .ts source,
+# which compiled node output cannot load.
+CMD ["pnpm", "--filter", "@maritime/vessel-agent", "exec", "tsx", "src/server.ts"]

@@ -1,5 +1,5 @@
 import { pgTable, uuid, varchar, timestamp, numeric, integer, text, pgEnum } from "drizzle-orm/pg-core";
-import { vessels } from "./vessels";
+import { vessels } from "./vessels.js";
 
 export const priorityEnum = pgEnum("priority", ["low", "medium", "high", "critical"]);
 

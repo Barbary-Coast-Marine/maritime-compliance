@@ -1,5 +1,5 @@
 import { pgTable, uuid, varchar, timestamp, boolean, pgEnum } from "drizzle-orm/pg-core";
-import { vessels } from "./vessels";
+import { vessels } from "./vessels.js";
 
 export const userRoleEnum = pgEnum("user_role", ["captain", "engineer", "crew", "fleet_manager", "volunteer", "admin"]);
 
