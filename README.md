@@ -7,7 +7,7 @@ Built by [Barbary Coast Marine](https://barbarycoastmarine.com) for the BuilderS
 🌐 **Live demo:** [demo.barbarycoastmarine.com](https://demo.barbarycoastmarine.com)  
 Login: `captain` / `obrien2026`
 
-🎬 **Demo video (1:45):** [docs/demo-firedrill.mp4](docs/demo-firedrill.mp4) — the full fire-drill flow, recorded live against the demo
+🎬 **Demo video (0:43):** [docs/demo-firedrill.mp4](docs/demo-firedrill.mp4) — the full fire-drill flow, recorded live against the demo
 
 ---
 
