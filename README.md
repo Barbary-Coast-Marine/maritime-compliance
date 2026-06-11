@@ -52,7 +52,8 @@ The agent logs a properly structured USCG logbook entry, links it to the applica
 - **AI compliance officer** — answers regulation questions, logs drills, searches USCG bulletins
 - **Maritime intel feed** — live USCG safety alerts and Port State Control focus areas
 - **Audit reports** — PDF-ready compliance history in one click
-- **Offline-first** — designed to run on a vessel's own hardware, no cloud required
+- **Continuous monitoring** — background job re-evaluates all rules every 4 hours and emails alerts via Composio when items go overdue
+- **Vessel-local deployment** — runs entirely on Docker on the vessel's own hardware; offline Ollama fallback is on the roadmap
 
 ---
 
@@ -80,6 +81,21 @@ The first startup runs database migrations and seeds demo vessel data automatica
 | [Composio](https://composio.dev) | Email alert notifications | composio.dev |
 
 > **No Nebius credits?** Set `NEBIUS_API_URL=https://api.groq.com/openai/v1/` and `GROQ_API_KEY=<your-key>` in `.env` to use Groq as a drop-in.
+
+---
+
+## Background Compliance Monitoring
+
+In addition to on-demand checks, the platform runs a scheduled compliance evaluation every 4 hours using a PostgreSQL-backed job queue (pg-boss):
+
+1. Loads all 106 USCG rules
+2. Queries vessel logbook to calculate `days_since_*` metrics for every compliance activity
+3. Evaluates each rule — produces pass / warning / violation verdicts
+4. Persists results to the `compliance_events` audit table
+5. Updates the vessel's overall compliance status
+6. If violations are found: sends an alert email via Composio to the vessel manager
+
+This means a shoreside fleet manager gets notified automatically when a vessel goes out of compliance — without anyone having to log in and check.
 
 ---
 
@@ -238,7 +254,9 @@ The O'Brien is a 1943 Liberty Ship operating as a seagoing museum under USCG Sub
 - **ABS Classification** — Hull and machinery rules
 - **IMO / SOLAS** — International safety conventions
 - **Port State Control** — PSC inspection readiness scoring
-- **Offline LLM** — Local Ollama fallback for vessels without satellite internet
+- **Offline LLM** — Local Ollama fallback for vessels without satellite internet (Nebius/Groq required for current release)
+- **Sensor telemetry** — NMEA 0183/2000 and Modbus ingestion for fuel, tank levels, engine hours
+- **Predictive maintenance** — ML-based failure prediction from sensor history
 
 ---
 
