@@ -47,7 +47,7 @@ A vessel-side compliance system with an AI agent that understands maritime regul
 
 The agent logs a properly structured USCG logbook entry, links it to the applicable CFR citation, and clears the compliance flag — all from natural language.
 
-- **38 USCG rules** covering Subchapter H passenger vessels, evaluated continuously
+- **106 USCG rules** across six subchapters (H, I, K, L, M, T), evaluated continuously
 - **Digital logbook** — timestamped, attributed, CFR-linked entries
 - **AI compliance officer** — answers regulation questions, logs drills, searches USCG bulletins
 - **Maritime intel feed** — live USCG safety alerts and Port State Control focus areas
@@ -114,21 +114,21 @@ User: "We did a man overboard drill, all 8 crew participated"
 
 ## Regulatory Coverage
 
-38 verified USCG rules across Subchapter H (Passenger Vessels):
+106 USCG rules across six subchapters — H, I, K, L, M, T (the demo vessel runs the 15 Subchapter H passenger-vessel rules):
 
 | Category | Rules | Example |
 |----------|-------|---------|
-| Drills | 6 | Fire Drill weekly (46 CFR 78.37), Abandon Ship, MOB, Immersion Suit |
-| Inspections | 12 | Lifesaving equipment weekly/monthly, fire extinguisher, EPIRB |
-| Certificates | 5 | COI, Drydock exam, TSMS audit |
-| Pre-departure | 8 | Steering gear test, passenger manifest, stability verification |
-| Logbook | 7 | Official logbook, crew training records, drug/alcohol compliance |
+| Inspections | 41 | Lifesaving equipment weekly/monthly, fire extinguisher, EPIRB |
+| Pre-departure | 24 | Steering gear test, passenger manifest, stability verification |
+| Drills | 19 | Fire Drill weekly (46 CFR 78.37), Abandon Ship, MOB, Immersion Suit |
+| Certificates | 17 | COI, Drydock exam, TSMS audit |
+| Maintenance | 5 | Hull, machinery, and equipment upkeep schedules |
 
-Rules are **human-verified YAML** — not auto-generated. Each must be reviewed and promoted to `verified` status before it generates live alerts:
+Rules are **hand-written YAML** — not auto-generated. Each carries a verification workflow (`draft` → `verified` with reviewer attribution and legal review) before production use:
 
 ```yaml
 rule_id: USCG-H-78-37-FIRE
-status: verified
+status: draft          # promoted to "verified" after human + legal review
 citation: "46 CFR 78.37"
 title: "Fire Drill"
 trigger:
@@ -136,6 +136,7 @@ trigger:
   interval_days: 7
   warning_days: 2
   critical_days: 0
+  metric: days_since_fire_drill
 required_action: >
   Conduct fire drill with all crew. Sound general alarm, simulate
   fire emergency, start fire pumps, deploy fire hoses...
@@ -161,7 +162,7 @@ required_action: >
 │  vessel-agent (Fastify) │  │  dashboard (Next.js)        │
 │  Port 3200              │  │  Port 3000                  │
 │                         │  │                             │
-│  Rule engine (38 rules) │  │  Bridge · Checks · Logbook  │
+│  Rule engine (106 rules)│  │  Bridge · Checks · Logbook  │
 │  AI agent loop          │  │  Alerts · Intel · Reports   │
 │  Compliance evaluator   │  │  Chat panel (all pages)     │
 │  Report generation      │  └─────────────────────────────┘
@@ -173,10 +174,7 @@ required_action: >
 │  Drizzle ORM            │   │  Nebius (LLM inference)  │
 └─────────────────────────┘   │  Tavily (reg. search)    │
                               │  Composio (email alerts) │
-┌─────────────────────────┐   └──────────────────────────┘
-│  Redis                  │
-│  Session store / cache  │
-└─────────────────────────┘
+                              └──────────────────────────┘
 ```
 
 ---
@@ -192,7 +190,6 @@ required_action: >
 | Regulation search | Tavily |
 | Notifications | Composio |
 | Agent runtime | OpenClaw |
-| Cache | Redis 7 |
 | Auth | JWT (bcrypt, 7-day sessions) |
 | Deployment | Docker Compose / PM2 |
 
@@ -216,13 +213,13 @@ maritime-compliance/
 ├── packages/
 │   ├── db/                     # Drizzle schema, migrations, seed
 │   ├── regulations/            # USCG rule YAML + loader
-│   │   └── rules/uscg/         # 38 verified compliance rules
+│   │   └── rules/uscg/         # 106 compliance rules (subchapters H–T)
 │   └── types/                  # Shared TypeScript types
-└── install/
-    ├── docker-compose.yml      # One-command cold start
-    ├── Dockerfile              # vessel-agent container
-    ├── Dockerfile.dashboard    # dashboard container
-    └── nginx.conf              # Routing config
+├── install/
+│   ├── Dockerfile              # vessel-agent container
+│   ├── Dockerfile.dashboard    # dashboard container
+│   └── nginx.conf              # Routing config
+└── docker-compose.yml          # One-command cold start
 ```
 
 ---
