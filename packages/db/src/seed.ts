@@ -13,11 +13,11 @@ async function seed() {
     process.exit(0);
   }
 
-  // Insert SS Jeremiah O'Brien
+  // Insert MY Dragon Lady
   const [vessel] = await db
     .insert(vessels)
     .values({
-      name: "SS Jeremiah O'Brien",
+      name: "MY Dragon Lady",
       imoNumber: "5171749",
       vesselType: "passenger",
       flagState: "US",
@@ -207,7 +207,7 @@ async function seed() {
       crewProfileId: crewProfile.id,
       credentialType: "safety_orientation",
       title: "Ship Safety Orientation",
-      issuer: "SS Jeremiah O'Brien",
+      issuer: "MY Dragon Lady",
       issueDate: "2022-05-10",
       status: "current",
     },

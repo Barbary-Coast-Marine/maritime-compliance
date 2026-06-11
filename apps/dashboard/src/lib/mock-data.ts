@@ -1,8 +1,7 @@
-// Mock data for the SS Jeremiah O'Brien — Subchapter H passenger vessel
-// Liberty Ship, IMO 5171749, ABS Class 4304713
+// Mock data for the MY Dragon Lady — Subchapter H passenger vessel
 
 export const vessel = {
-  name: "SS Jeremiah O'Brien",
+  name: "MY Dragon Lady",
   imo: "5171749",
   mmsi: "366879000",
   callSign: "KXCH",

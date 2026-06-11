@@ -225,7 +225,7 @@ export default function CrewOnboardingWizard() {
       allCredentials.push({
         credential_type: "safety_orientation",
         title: "Ship Safety Orientation",
-        issuer: "SS Jeremiah O'Brien",
+        issuer: "MY Dragon Lady",
         issue_date: data.safety_orientation_date,
       });
     }
