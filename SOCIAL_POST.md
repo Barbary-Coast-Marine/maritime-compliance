@@ -5,37 +5,43 @@
 
 ## PRIMARY POST (thread opener)
 
-We built an AI compliance officer for commercial vessels.
+*(274 chars)*
 
-Tell it "we ran the fire drill" — it writes the USCG logbook entry, cites 46 CFR 78.37, and clears the compliance flag. In one sentence.
+We built an AI compliance officer for ships.
 
-First pilot: SS Jeremiah O'Brien. A 1943 Liberty Ship. At sea.
+Tell it "we ran the fire drill" — it writes the USCG logbook entry, cites 46 CFR 78.37, and clears the flag.
+
+First pilot: SS Jeremiah O'Brien, a 1943 Liberty Ship. At sea.
 
 @ship_builders @nebiusai @composio @tavilyai @openclaw
-
-🔗 demo.barbarycoastmarine.com (captain / obrien2026)
 
 ---
 
 ## REPLY 1 (tech thread)
 
+*(264 chars)*
+
 Built on:
 • @nebiusai — LLM inference
-• @tavilyai — live USCG bulletin + regulation search
-• @composio — email alerts when compliance goes critical
+• @tavilyai — live USCG regulation search
+• @composio — email alerts
 • @openclaw — agent runtime
 
-106 USCG rules across six subchapters. Offline-first. Runs on the vessel's own hardware.
+106 USCG rules. Offline-first. Runs on the vessel's own hardware.
+
+Live demo: demo.barbarycoastmarine.com (captain / obrien2026)
 
 ---
 
 ## REPLY 2 (the story)
 
-Commercial vessels track compliance in spreadsheets and paper logbooks.
+*(257 chars)*
+
+Ships track compliance in spreadsheets and paper logbooks.
 
 A missed drill = $25K fine. Port State Control detention. Or worse.
 
-The chief engineer retires. The institutional knowledge goes with them.
+The chief engineer retires — the institutional knowledge goes with them.
 
 There's no software built for this. We're fixing that.
 
