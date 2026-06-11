@@ -25,7 +25,7 @@ Built on:
 • @composio — email alerts when compliance goes critical
 • @openclaw — agent runtime
 
-38 verified USCG rules. Offline-first. Runs on the vessel's own hardware.
+106 USCG rules across six subchapters. Offline-first. Runs on the vessel's own hardware.
 
 ---
 
@@ -45,7 +45,7 @@ There's no software built for this. We're fixing that.
 - Post the thread opener first, then reply with 1 and 2 immediately after
 - Pin the thread opener to the @BarbaryCMarine profile
 - Post no earlier than Jun 10 (fresh in judges' feeds for Jun 12 deadline)
-- If you have a screen recording of the demo by then, attach it to the opener
+- Attach the 0:43 demo video (`bcm-demo-firedrill.mp4`) to the opener
 
 ---
 
@@ -64,7 +64,7 @@ There's no software built for this. So I built it.
 → Monitors USCG safety bulletins and Port State Control focus areas in real time
 → Sends email alerts before items go critical
 
-38 human-verified USCG rules. Offline-first architecture — designed to run on a vessel's own hardware without satellite internet.
+106 hand-written USCG rules across six subchapters. Offline-first architecture — designed to run on a vessel's own hardware without satellite internet.
 
 First pilot: the O'Brien herself, Memorial Day cruise, May 30th. It ran live at sea.
 
